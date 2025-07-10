@@ -1,10 +1,12 @@
 import { getPosts } from '../../lib/api';
+import Navbar from '@/components/Navbar';
 
 export default async function Home() {
   const posts = await getPosts();
 
   return (
-    <main className="p-10">
+    <main className="">
+      <Navbar />
       <h1 className="text-3xl font-bold mb-4">Noticias</h1>
       {posts.map((post) => (
         <article key={post.id} className="mb-8">
@@ -17,6 +19,7 @@ export default async function Home() {
           />
         </article>
       ))}
+      
     </main>
   );
 }
