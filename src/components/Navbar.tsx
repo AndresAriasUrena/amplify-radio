@@ -3,6 +3,7 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSearch } from '@/lib/SearchContext';
+import Link from 'next/link';
 
 interface NavLink {
   href: string;
@@ -28,7 +29,7 @@ export default function Navbar() {
 
   const menuItems: MenuItem[] = [
     { key: 'inicio', href: '/' },
-    { key: 'noticias', href: '/noticias' },
+    { key: 'noticias', href: '/news' },
     { key: 'podcasts', href: '/podcasts' },
     { key: 'amplifiers', href: '/amplifiers' },
     { key: 'en-vivo', href: '/en-vivo' },
@@ -67,7 +68,7 @@ export default function Navbar() {
           {/* Desktop Navigation Links - Hidden on mobile */}
           <div className="hidden lg:flex items-center space-x-4">
             {menuItems.map((item) => (
-              <a
+              <Link
                 key={item.key}
                 href={item.href}
                 onClick={() => handleLinkClick(item.key)}
@@ -76,7 +77,7 @@ export default function Navbar() {
                 }`}
               >
                 {item.key.charAt(0).toUpperCase() + item.key.slice(1)}
-              </a>
+              </Link>
             ))}
           </div>
           </div>
@@ -193,7 +194,7 @@ export default function Navbar() {
               {menuItems.map((item) => {
                 const isActive = pathname === item.href;
                 return (
-                  <a
+                  <Link
                     key={item.key}
                     href={item.href}
                     onClick={() => {
@@ -207,7 +208,7 @@ export default function Navbar() {
                     }`}
                   >
                     {item.key.charAt(0).toUpperCase() + item.key.slice(1)}
-                  </a>
+                  </Link>
                 );
               })}
             </nav>

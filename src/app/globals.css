@@ -20,34 +20,60 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Jost', sans-serif;
-  padding-bottom: 80px; /* Espacio para el reproductor de radio */
+  padding-bottom: 65px; 
 }
 
-/* Estilos para el reproductor de radio */
 .radio-player-container {
-  height: 72px; /* Altura del reproductor */
+  height: 72px; 
 }
 
-/* Estilos para el slider de volumen */
 .radio-volume-slider::-webkit-slider-thumb {
   appearance: none;
   width: 14px;
   height: 14px;
-  background: #ef4444;
+  background: #E5754C;
   border-radius: 50%;
   cursor: pointer;
+  margin-top: -4px;
 }
 
 .radio-volume-slider::-moz-range-thumb {
   width: 14px;
   height: 14px;
-  background: #ef4444;
+  background: #E5754C;
   border-radius: 50%;
   cursor: pointer;
   border: none;
+  margin-top: -4px; 
 }
 
-/* Delays de animación para los indicadores de reproducción */
+.radio-volume-slider {
+  background: transparent;
+}
+.radio-volume-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #E5754C var(--progress, 70%), #6E6E6E var(--progress, 70%));
+}
+.radio-volume-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 4px;
+  background: #4b5563;
+}
+.radio-volume-slider::-ms-fill-lower {
+  background: #E5754C;
+  border-radius: 4px;
+}
+.radio-volume-slider::-ms-fill-upper {
+  background: #4b5563;
+  border-radius: 4px;
+}
+.radio-volume-slider::-moz-range-progress {
+  background-color: #E5754C;
+  height: 6px;
+  border-radius: 4px;
+}
+
 .animation-delay-200 {
   animation-delay: 0.2s;
 }

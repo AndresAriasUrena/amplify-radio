@@ -26,14 +26,12 @@ const RadioPlayer = () => {
     
     try {
       if (isPlaying) {
-        // Pausar: detener completamente y limpiar el src
         audioRef.current.pause();
         audioRef.current.src = '';
         audioRef.current.load();
         setIsPlaying(false);
       } else {
-        // Reproducir: reconectar al stream en vivo
-        audioRef.current.src = radioUrl + '?t=' + Date.now(); // Agregar timestamp para evitar cache
+        audioRef.current.src = radioUrl + '?t=' + Date.now();
         audioRef.current.load();
         await audioRef.current.play();
         setIsPlaying(true);
@@ -77,15 +75,21 @@ const RadioPlayer = () => {
     }
   }, [volume]);
 
-  // Manejar errores de conexión intentando reconectar
   const handleError = () => {
     console.error('Error de conexión al stream');
     setIsLoading(false);
     setIsPlaying(false);
   };
 
+  const getVolumeBackground = () => {
+    const percent = ((isMuted ? 0 : volume) * 100);
+    return {
+      '--progress': `${percent}%`
+    } as React.CSSProperties;
+  };
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg border-t border-gray-700 z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#1C1C1C] text-[#C7C7C7] z-50">
       <audio
         ref={audioRef}
         preload="none"
@@ -105,7 +109,7 @@ const RadioPlayer = () => {
         {/* Información de la radio */}
         <div className="flex items-center space-x-3 min-w-0 flex-1">
           <div className="flex items-center space-x-2">
-            <Radio className="w-5 h-5 text-red-500" />
+            <Radio className="w-5 h-5 text-[#E5754C]" />
             <div className="min-w-0">
               <p className="font-medium text-sm truncate">Radio en Vivo</p>
               <p className="text-xs text-gray-400 truncate">
@@ -115,29 +119,29 @@ const RadioPlayer = () => {
           </div>
           {isPlaying && (
             <div className="flex space-x-1">
-              <div className="w-1 h-4 bg-red-500 animate-pulse rounded-full"></div>
-              <div className="w-1 h-4 bg-red-500 animate-pulse rounded-full animation-delay-200"></div>
-              <div className="w-1 h-4 bg-red-500 animate-pulse rounded-full animation-delay-400"></div>
+              <div className="w-1 h-4 bg-[#E5754C] animate-pulse rounded-full"></div>
+              <div className="w-1 h-4 bg-[#E5754C] animate-pulse rounded-full animation-delay-200"></div>
+              <div className="w-1 h-4 bg-[#E5754C] animate-pulse rounded-full animation-delay-400"></div>
             </div>
           )}
         </div>
 
         {/* Controles principales */}
         <div className="flex items-center space-x-4">
-          {/* Botón anterior (deshabilitado) */}
+          {/* Botón anterior (deshabilitado) 
           <button
             disabled
             className="p-2 rounded-full bg-gray-700 text-gray-500 cursor-not-allowed"
             title="Anterior (no disponible para radio en vivo)"
           >
             <SkipBack className="w-4 h-4" />
-          </button>
+          </button>*/}
 
           {/* Botón play/pause */}
           <button
             onClick={togglePlay}
             disabled={isLoading}
-            className="p-3 rounded-full bg-red-600 hover:bg-red-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
+            className="rounded-full hover:text-[#E5754C] duration-300 transition-all disabled:bg-[#E5754C] disabled:cursor-not-allowed"
             title={isPlaying ? 'Pausar' : 'Reproducir en vivo'}
           >
             {isLoading ? (
@@ -149,14 +153,14 @@ const RadioPlayer = () => {
             )}
           </button>
 
-          {/* Botón siguiente (deshabilitado) */}
+          {/* Botón siguiente (deshabilitado) 
           <button
             disabled
             className="p-2 rounded-full bg-gray-700 text-gray-500 cursor-not-allowed"
             title="Siguiente (no disponible para radio en vivo)"
           >
             <SkipForward className="w-4 h-4" />
-          </button>
+          </button>*/}
         </div>
 
         {/* Control de volumen */}
@@ -182,6 +186,7 @@ const RadioPlayer = () => {
               value={isMuted ? 0 : volume}
               onChange={handleVolumeChange}
               className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer radio-volume-slider"
+              style={getVolumeBackground()}
               title={`Volumen: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
             />
           </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 const Footer = () => {
     return (
@@ -18,11 +19,11 @@ const Footer = () => {
                                 INFORMACIÓN
                             </p>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="/sobre-nosotros" className="hover:text-[#E5754C] transition-colors">Sobre Nosotros</a></li>
-                                <li><a href="/podcasts" className="hover:text-[#E5754C] transition-colors">Podcasts</a></li>
-                                <li><a href="/horario" className="hover:text-[#E5754C] transition-colors">Horario</a></li>
-                                <li><a href="/amplifiers" className="hover:text-[#E5754C] transition-colors">Amplifiers</a></li>
-                                <li><a href="/en-vivo" className="hover:text-[#E5754C] transition-colors">En Vivo</a></li>
+                                <li><Link href="/sobre-nosotros" className="hover:text-[#E5754C] transition-colors">Sobre Nosotros</Link></li>
+                                <li><Link href="/podcasts" className="hover:text-[#E5754C] transition-colors">Podcasts</Link></li>
+                                <li><Link href="/horario" className="hover:text-[#E5754C] transition-colors">Horario</Link></li>
+                                <li><Link href="/amplifiers" className="hover:text-[#E5754C] transition-colors">Amplifiers</Link></li>
+                                <li><Link href="/en-vivo" className="hover:text-[#E5754C] transition-colors">En Vivo</Link></li>
                             </ul>
                         </div>
 
@@ -31,14 +32,14 @@ const Footer = () => {
                                 NOTICIAS
                             </p>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="/actualidad" className="hover:text-[#E5754C] transition-colors">Actualidad</a></li>
-                                <li><a href="/tendencia" className="hover:text-[#E5754C] transition-colors">Tendencia</a></li>
-                                <li><a href="/entretenimiento" className="hover:text-[#E5754C] transition-colors">Entretenimiento</a></li>
-                                <li><a href="/dada-te-cuenta" className="hover:text-[#E5754C] transition-colors">Dadá te cuenta</a></li>
-                                <li><a href="/columna" className="hover:text-[#E5754C] transition-colors">Columna</a></li>
-                                <li><a href="/lit-by-lit" className="hover:text-[#E5754C] transition-colors">Lit by lit</a></li>
-                                <li><a href="/negocios" className="hover:text-[#E5754C] transition-colors">Negocios</a></li>
-                                <li><a href="/sin-categoria" className="hover:text-[#E5754C] transition-colors">Sin categoría</a></li>
+                                <li><Link href="/actualidad" className="hover:text-[#E5754C] transition-colors">Actualidad</Link></li>
+                                <li><Link href="/tendencia" className="hover:text-[#E5754C] transition-colors">Tendencia</Link></li>
+                                <li><Link href="/entretenimiento" className="hover:text-[#E5754C] transition-colors">Entretenimiento</Link></li>
+                                <li><Link href="/dada-te-cuenta" className="hover:text-[#E5754C] transition-colors">Dadá te cuenta</Link></li>
+                                <li><Link href="/columna" className="hover:text-[#E5754C] transition-colors">Columna</Link></li>
+                                <li><Link href="/lit-by-lit" className="hover:text-[#E5754C] transition-colors">Lit by lit</Link></li>
+                                <li><Link href="/negocios" className="hover:text-[#E5754C] transition-colors">Negocios</Link></li>
+                                <li><Link href="/sin-categoria" className="hover:text-[#E5754C] transition-colors">Sin categoría</Link></li>
                             </ul>
                         </div>
 
@@ -58,10 +59,9 @@ const Footer = () => {
                                 CONTACTO
                             </p>
                             <ul className="space-y-2 text-sm">
-                                <li>Teléfono: <a href="tel:+50622240707" className="hover:text-[#E5754C] transition-colors">+506 2224 - 0707</a></li>
-                                <li>Correo: <a href="mailto:ventas@grupocolumbia.co.cr" className="hover:text-[#E5754C] transition-colors">ventas@grupocolumbia.co.cr</a></li>
-                                <li><a href="/paute-con-nosotros" className="hover:text-[#E5754C] transition-colors">Paute con nosotros</a></li>
-                                <li><a href="/formulario" className="hover:text-[#E5754C] transition-colors">Formulario</a></li>
+                                <li className='flex flex-col'>Teléfono: <a href="tel:+50622240707" className="hover:text-[#E5754C] transition-colors text-[#D7D7D7]/40">+506 2224 - 0707</a></li>
+                                <li className='flex flex-col'>Correo: <a href="mailto:ventas@grupocolumbia.co.cr" className="hover:text-[#E5754C] transition-colors text-[#D7D7D7]/40">ventas@grupocolumbia.co.cr</a></li>
+                                <li className='flex flex-col'>Pauta con nosotros: <Link href="/contact" className="hover:text-[#E5754C] transition-colors text-[#D7D7D7]/40">Formulario</Link></li>
                             </ul>
                         </div>
                     </div>
