@@ -22,6 +22,14 @@ interface WPPost {
     };
 }
 
+function addHeadingIds(html: string) {
+    let count = 0;
+    return html.replace(/<(h[23])([^>]*)>/gi, (match, tag, attrs) => {
+        if (/id=/.test(attrs)) return match;
+        return `<${tag}${attrs} id="section-${count++}">`;
+    });
+}
+
 async function getPostBySlug(slug: string): Promise<WPPost | null> {
     const res = await fetch(`https://amplify.aurigital.com/wp-json/wp/v2/posts?slug=${slug}&_embed`, { next: { revalidate: 60 } });
     const data = await res.json();
@@ -37,6 +45,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
     const post = await getPostBySlug(params.slug);
     if (!post) return notFound();
 
+    const htmlWithIds = addHeadingIds(post.content.rendered);
 
     const mainCategory = post._embedded?.['wp:term']?.[0]?.[0];
     const categoryId = mainCategory?.id;
@@ -89,13 +98,13 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
                                         className="w-full max-h-[400px] object-cover rounded-2xl mx-auto"
                                     />
                                 </div>
-                                 <div className="flex flex-row gap-8">
-                                    <div className="hidden lg:block text-left w-full">
-                                        <NewsSectionsSidebar html={post.content.rendered} />
+                                <div className="flex flex-row gap-8">
+                                    <div className="hidden lg:block text-left w-full max-w-xs">
+                                        <NewsSectionsSidebar html={htmlWithIds} />
                                     </div>
                                     <article
-                                        className="prose prose-invert text-[#C7C7C7] prose-h2:text-[#E5754C] prose-a:text-[#E5754C] prose-strong:text-white text-left mx-auto"
-                                        dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+                                        className="prose prose-invert text-[#C7C7C7] prose-h2:text-[#E5754C] prose-a:text-[#E5754C] prose-strong:text-white mx-auto text-left"
+                                        dangerouslySetInnerHTML={{ __html: htmlWithIds }}
                                     />
                                 </div>
                                 {relatedPosts.length > 0 && <RelatedNewsGrid posts={relatedPosts} />}
