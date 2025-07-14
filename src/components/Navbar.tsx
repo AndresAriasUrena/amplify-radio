@@ -21,6 +21,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [localSearchTerm, setLocalSearchTerm] = useState('');
   const [activeLink, setActiveLink] = useState('services');
+  const router = useRouter();
 
   const handleLinkClick = (link: string) => {
     setActiveLink(link);
@@ -50,6 +51,16 @@ export default function Navbar() {
       setSearchTerm(searchValue.trim());
       setLocalSearchTerm('');
       closeMenu();
+
+      const params = new URLSearchParams();
+      params.set('search', searchValue.trim());
+      const newURL = `/news?${params.toString()}`;
+
+      if (window.location.pathname === '/news') {
+        router.replace(newURL, { scroll: false });
+      } else {
+        router.push(newURL);
+      }
     }
   };
 

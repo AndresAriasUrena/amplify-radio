@@ -76,7 +76,6 @@ const RadioPlayer = () => {
   }, [volume]);
 
   const handleError = () => {
-    console.error('Error de conexión al stream');
     setIsLoading(false);
     setIsPlaying(false);
   };

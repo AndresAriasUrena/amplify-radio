@@ -50,13 +50,18 @@ const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen =
 
   const updateURL = (filters: FilterData) => {
     const params = new URLSearchParams();
-
     if (filters.categories.length > 0) {
       params.set('categories', filters.categories.join(','));
     }
+    const newURL = params.toString() ? `/news?${params.toString()}` : '/news';
 
-    const newURL = params.toString() ? `?${params.toString()}` : '/news';
-    router.replace(newURL, { scroll: false });
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname === '/news') {
+        router.replace(newURL, { scroll: false });
+      } else {
+        router.push(newURL);
+      }
+    }
   };
 
   const loadFiltersFromURL = () => {
@@ -98,7 +103,6 @@ const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen =
   useEffect(() => {
     if (!loading) {
       onFilterChange?.(selectedFilters);
-      updateURL(selectedFilters);
     }
   }, [selectedFilters]);
 
@@ -109,15 +113,18 @@ const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen =
         ? currentValues.filter(v => v !== value)
         : [...currentValues, value];
 
-      return {
+      const newFilters = {
         ...prev,
         [category]: newValues
       };
+      updateURL(newFilters);
+      return newFilters;
     });
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    updateURL(selectedFilters);
   };
 
   return (
@@ -155,7 +162,7 @@ const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen =
         {loading ? (
           <div className="text-[#C7C7C7] text-sm">Cargando categorías...</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="flex flex-wrap gap-2">
             {availableFilters.categories.map((category) => (
               <a 
                 key={category.slug}
@@ -206,7 +213,7 @@ const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen =
           <a
             href="https://www.facebook.com/profile.php?id=100063517146066"
             target="_blank"
-            className="flex items-center border border-[#C7C7C7] text-[#C7C7C7] rounded-lg px-4 py-2 space-x-2 hover:border-[#E5754C] hover:text-[#E5754C] transition-colors sm:col-span-2"
+            className="flex items-center border border-[#C7C7C7] text-[#C7C7C7] rounded-lg px-4 py-2 space-x-2 hover:border-[#E5754C] hover:text-[#E5754C] transition-colors"
           >
             <Facebook className="w-5 h-5" />
             <span className="text-sm">Facebook</span>
