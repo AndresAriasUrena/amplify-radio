@@ -1,32 +1,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { WordPressPost } from '@/types/wordpress';
 
 interface RelatedNewsGridProps {
-  posts: Array<{
-    id: number;
-    slug: string;
-    title: { rendered: string };
-    _embedded?: {
-      'wp:featuredmedia'?: Array<{ source_url: string }>;
-      'wp:term'?: Array<Array<{ name: string; slug: string }>>;
-    };
-    date: string;
-  }>;
+  posts: WordPressPost[];
 }
 
-export default function RelatedNewsGrid({ posts }: RelatedNewsGridProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-  };
+import WordPressService from '@/lib/wordpressService';
 
-  const cleanTitle = (title: string) => {
-    return title.replace(/<\/?[^>]+(>|$)/g, '');
-  };
+export default function RelatedNewsGrid({ posts }: RelatedNewsGridProps) {
+  const formatDate = WordPressService.formatDate;
+  const cleanTitle = WordPressService.cleanHtml;
 
   return (
     <section className="mt-16">
@@ -39,8 +23,8 @@ export default function RelatedNewsGrid({ posts }: RelatedNewsGridProps) {
       <div className="h-0.5 w-full bg-[#E5754C] mb-6" />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {posts.map((post) => {
-          const featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/placeholder-news.jpg';
-          const category = post._embedded?.['wp:term']?.[0]?.[0]?.name || 'Sin categoría';
+          const featuredImage = WordPressService.getFeaturedImage(post);
+          const category = WordPressService.getCategory(post);
           return (
             <Link href={`/news/${post.slug}`} key={post.id}>
               <article className="group overflow-hidden hover:scale-[1.02] transition-all duration-700">

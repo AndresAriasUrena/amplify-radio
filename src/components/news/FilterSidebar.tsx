@@ -5,32 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Facebook, Instagram, X, Search } from 'lucide-react';
 import { IoClose } from 'react-icons/io5';
 import { SearchContext } from '@/lib/SearchContext';
-
-interface WordPressCategory {
-  id: number;
-  count: number;
-  description: string;
-  link: string;
-  name: string;
-  slug: string;
-  taxonomy: string;
-  parent: number;
-}
+import WordPressService from '@/lib/wordpressService';
+import { WordPressCategory, FilterItem, FilterData } from '@/types/wordpress';
 
 interface FilterSidebarProps {
   onFilterChange?: (filters: FilterData) => void;
   isMobileOpen?: boolean;
   setIsMobileOpen?: (open: boolean) => void;
-}
-
-interface FilterItem {
-  label: string;
-  count: number;
-  slug: string;
-}
-
-interface FilterData {
-  categories: string[];
 }
 
 const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen = () => { } }: FilterSidebarProps) => {
@@ -74,17 +55,16 @@ const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen =
       try {
         setLoading(true);
         
-        const response = await fetch('https://amplify.aurigital.com/wp-json/wp/v2/categories?per_page=100');
-        const categories: WordPressCategory[] = await response.json();
+        const { categories } = await WordPressService.getCategories();
 
         setAvailableFilters({
           categories: categories
-            .map(cat => ({
+            .map((cat: WordPressCategory) => ({
               label: cat.name,
               count: cat.count,
               slug: cat.slug
             }))
-            .sort((a, b) => b.count - a.count) 
+            .sort((a: FilterItem, b: FilterItem) => b.count - a.count) 
         });
 
         const urlFilters = loadFiltersFromURL();

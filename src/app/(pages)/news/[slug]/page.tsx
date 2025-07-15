@@ -4,23 +4,12 @@ import FilterSidebar from '@/components/news/FilterSidebar';
 import RelatedNewsGrid from '@/components/news/RelatedNewsGrid';
 import { notFound } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import WordPressService from '@/lib/wordpressService';
+import { WordPressPost } from '@/types/wordpress';
 
 const NewsSectionsSidebar = dynamic(() => import('@/components/news/NewsSectionsSidebar'), { ssr: false });
 
-interface WPPost {
-    id: number;
-    slug: string;
-    title: { rendered: string };
-    content: { rendered: string };
-    excerpt: { rendered: string };
-    date: string;
-    author: number;
-    _embedded?: {
-        author?: Array<{ name: string }>;
-        'wp:featuredmedia'?: Array<{ source_url: string }>;
-        'wp:term'?: Array<Array<{ id: number; name: string; slug: string }>>;
-    };
-}
+
 
 function addHeadingIds(html: string) {
     let count = 0;
@@ -30,15 +19,12 @@ function addHeadingIds(html: string) {
     });
 }
 
-async function getPostBySlug(slug: string): Promise<WPPost | null> {
-    const res = await fetch(`https://amplify.aurigital.com/wp-json/wp/v2/posts?slug=${slug}&_embed`, { next: { revalidate: 60 } });
-    const data = await res.json();
-    return data[0] || null;
+async function getPostBySlug(slug: string): Promise<WordPressPost | null> {
+    return await WordPressService.getPostBySlug(slug);
 }
 
-async function getRelatedPosts(categoryId: number, excludeId: number): Promise<WPPost[]> {
-    const res = await fetch(`https://amplify.aurigital.com/wp-json/wp/v2/posts?categories=${categoryId}&exclude=${excludeId}&per_page=3&orderby=date&order=desc&_embed`, { next: { revalidate: 60 } });
-    return await res.json();
+async function getRelatedPosts(categoryId: number, excludeId: number): Promise<WordPressPost[]> {
+    return await WordPressService.getRelatedPosts(categoryId, excludeId, 3);
 }
 
 export default async function NewsDetailPage({ params }: { params: { slug: string } }) {
@@ -50,22 +36,15 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
     const mainCategory = post._embedded?.['wp:term']?.[0]?.[0];
     const categoryId = mainCategory?.id;
 
-    let relatedPosts: WPPost[] = [];
+    let relatedPosts: WordPressPost[] = [];
     if (categoryId) {
         relatedPosts = await getRelatedPosts(categoryId, post.id);
     }
 
-    const featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/placeholder-news.jpg';
-    const author = post._embedded?.author?.[0]?.name || 'Autor desconocido';
+    const featuredImage = WordPressService.getFeaturedImage(post) || '/placeholder-news.jpg';
+    const author = WordPressService.getAuthor(post);
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        });
-    };
+    const formatDate = WordPressService.formatDate;
 
     return (
         <>

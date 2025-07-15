@@ -6,10 +6,8 @@ import NewsCard from '../UI/NewsCard';
 import { IoFilter, IoClose, IoReload } from 'react-icons/io5';
 import { SearchContext } from '@/lib/SearchContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-
-interface FilterData {
-  categories: string[];
-}
+import WordPressService from '@/lib/wordpressService';
+import { WordPressPost, FilterData } from '@/types/wordpress';
 
 interface NewsGridProps {
   filters: FilterData | null;
@@ -17,12 +15,12 @@ interface NewsGridProps {
 }
 
 export default function NewsGrid({ filters, onOpenFilters }: NewsGridProps) {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<WordPressPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [sortBy, setSortBy] = useState('date');
+  const [sortBy, setSortBy] = useState<'date' | 'title-asc' | 'title-desc'>('date');
   const [totalPosts, setTotalPosts] = useState(0);
   const [categoriesMap, setCategoriesMap] = useState<{[slug: string]: number}>({});
   const { searchTerm } = useContext(SearchContext);
@@ -35,15 +33,8 @@ export default function NewsGrid({ filters, onOpenFilters }: NewsGridProps) {
   useEffect(() => {
     const fetchCategoriesMap = async () => {
       try {
-        const response = await fetch('https://amplify.aurigital.com/wp-json/wp/v2/categories?per_page=100');
-        const categories = await response.json();
-        
-        const map: {[slug: string]: number} = {};
-        categories.forEach((cat: any) => {
-          map[cat.slug] = cat.id;
-        });
-        
-        setCategoriesMap(map);
+        const { categoriesMap } = await WordPressService.getCategories();
+        setCategoriesMap(categoriesMap as {[slug: string]: number});
       } catch (error) {
         console.error('Error loading categories map:', error);
       }
@@ -56,52 +47,35 @@ export default function NewsGrid({ filters, onOpenFilters }: NewsGridProps) {
     try {
       setLoading(true);
       setError(null);
+      
+      if (!append) {
+        setPosts([]);
+      }
 
       const perPage = pageNum === 1 ? INITIAL_LOAD : POSTS_PER_PAGE;
 
-      let apiUrl = `https://amplify.aurigital.com/wp-json/wp/v2/posts?_embed&per_page=${perPage}&page=${pageNum}`;
+      const categoryIds = filters?.categories && filters.categories.length > 0
+        ? filters.categories
+            .map(slug => categoriesMap[slug])
+            .filter(id => id !== undefined)
+        : [];
 
-      if (sortBy === 'date') {
-        apiUrl += '&orderby=date&order=desc';
-      } else if (sortBy === 'title-asc') {
-        apiUrl += '&orderby=title&order=asc';
-      } else if (sortBy === 'title-desc') {
-        apiUrl += '&orderby=title&order=desc';
-      }
-
-      if (filters?.categories && filters.categories.length > 0) {
-        const categoryIds = filters.categories
-          .map(slug => categoriesMap[slug])
-          .filter(id => id !== undefined)
-          .join(',');
-        
-        if (categoryIds) {
-          apiUrl += `&categories=${categoryIds}`;
-        }
-      }
-
-      if (searchTerm) {
-        apiUrl += `&search=${encodeURIComponent(searchTerm)}`;
-      }
-
-      const response = await fetch(apiUrl);
-
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '1');
-      const totalItems = parseInt(response.headers.get('X-WP-Total') || '0');
+      const result = await WordPressService.getPosts({
+        page: pageNum,
+        perPage,
+        categories: categoryIds,
+        search: searchTerm || '',
+        orderBy: sortBy
+      });
 
       if (append) {
-        setPosts(prev => [...prev, ...data]);
+        setPosts(prev => [...prev, ...result.posts]);
       } else {
-        setPosts(data);
+        setPosts(result.posts);
       }
 
-      setTotalPosts(totalItems);
-      setHasMore(pageNum < totalPages);
+      setTotalPosts(result.totalItems);
+      setHasMore(pageNum < result.totalPages);
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido al cargar noticias');
@@ -201,20 +175,8 @@ export default function NewsGrid({ filters, onOpenFilters }: NewsGridProps) {
                 </div>
               )}
             </>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-[#C7C7C7] text-lg">
-                No se encontraron noticias con los filtros seleccionados
-              </p>
-            </div>
-          )}
+          ) : null}
         </>
-      )}
-
-      {loading && posts.length > 0 && (
-        <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#E5754C] border-t-transparent"></div>
-        </div>
       )}
     </div>
   );

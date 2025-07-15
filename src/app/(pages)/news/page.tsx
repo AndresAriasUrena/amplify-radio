@@ -6,10 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import FilterSidebar from '@/components/news/FilterSidebar';
 import NewsGrid from '@/components/news/NewsGrid';
-
-interface FilterData {
-  categories: string[];
-}
+import { FilterData } from '@/types/wordpress';
 
 function NewsContent() {
   const [filters, setFilters] = useState<FilterData>({ categories: [] });

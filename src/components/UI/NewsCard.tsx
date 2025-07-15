@@ -2,48 +2,19 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { WordPressPost } from '@/types/wordpress';
 
 interface NewsCardProps {
-  post: {
-    id: number;
-    slug: string;
-    title: {
-      rendered: string;
-    };
-    excerpt: {
-      rendered: string;
-    };
-    _embedded?: {
-      'wp:featuredmedia'?: Array<{
-        source_url: string;
-      }>;
-      'wp:term'?: Array<Array<{
-        name: string;
-        slug: string;
-      }>>;
-    };
-    date: string;
-  };
+  post: WordPressPost;
 }
 
+import WordPressService from '@/lib/wordpressService';
+
 export default function NewsCard({ post }: NewsCardProps) {
-  const featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/placeholder-news.jpg';
-  
-  const category = post._embedded?.['wp:term']?.[0]?.[0]?.name || 'Sin categoría';
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  };
-
-  // Limpiar el título de HTML tags
-  const cleanTitle = (title: string) => {
-    return title.replace(/<\/?[^>]+(>|$)/g, "");
-  };
+  const featuredImage = WordPressService.getFeaturedImage(post);
+  const category = WordPressService.getCategory(post);
+  const formatDate = WordPressService.formatDate;
+  const cleanTitle = WordPressService.cleanHtml;
 
   return (
     <Link href={`/news/${post.slug}`}>
