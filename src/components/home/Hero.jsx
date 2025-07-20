@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -17,10 +18,10 @@ const Hero = () => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -111,7 +112,7 @@ const Hero = () => {
   }
 
   return (
-    <section className="overflow-hidden h-[60vh] flex items-center my-8">
+    <section className="overflow-hidden h-[60vh] flex items-center mt-8 mb-2">
       <div className="container mx-auto px-4 flex justify-center flex-col">
 
         <div className="relative lg:left-1/2 lg:-translate-x-1/2 lg:w-[170vw] overflow-x-visible">
@@ -126,40 +127,41 @@ const Hero = () => {
                 }
                 return currentSlide;
               };
-              
+
               const centerIndex = getCenterIndex(activeSlide, posts.length);
               const isActive = index === centerIndex;
-              
+
               const featuredImage = getFeaturedImage(post);
               const category = getCategory(post);
               const formattedDate = formatDate(post.date);
 
               return (
-                <div key={post.id} className="px-3 outline-none h-[55vh]">
+                <div key={post.id} className="px-3 outline-none h-[58vh]">
                   <div
                     className={`
-                      relative transition-all rounded-2xl overflow-hidden h-full
-                      ${isActive
+                        relative transition-all rounded-2xl overflow-hidden h-full
+                        ${isActive
                         ? "scale-100 z-10 shadow-xl rounded-2xl"
                         : "scale-[85%] opacity-90"}
-                    `}
+                      `}
                   >
-                    <div 
+                    <div
                       className="absolute inset-0 bg-cover bg-center rounded-2xl"
                       style={{ backgroundImage: `url(${featuredImage})` }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                     </div>
-
                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <div className="mb-1">
-                        <span className="text-[#C4C4C4] text-sm uppercase font-normal">
-                          {category} | {formattedDate}
-                        </span>
-                      </div>
-                      <h3 className={`xl:text-2xl text-xl uppercase leading-tight text-[#E3E3E3] font-jost font-medium`}>
-                        {post.title.rendered}
-                      </h3>
+                      <Link href={`/news/${post.slug}`} className="cursor-pointer">
+                        <div className="mb-1">
+                          <span className="text-[#C4C4C4] text-sm uppercase font-normal">
+                            {category} | {formattedDate}
+                          </span>
+                        </div>
+                        <h3 className={`xl:text-2xl text-xl uppercase leading-tight text-[#E3E3E3] font-jost font-medium`}>
+                          {post.title.rendered}
+                        </h3>
+                      </Link>
                     </div>
                   </div>
                 </div>

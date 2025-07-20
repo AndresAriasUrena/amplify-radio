@@ -17,7 +17,7 @@ const RadioPlayer = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const radioUrl = "https://s2.radio.co/s83b86382e/listen";
+  const radioUrl = "https://streams.radio.co/s7e8f19c33/listen";
 
   const togglePlay = async () => {
     if (!audioRef.current) return;
