@@ -5,6 +5,7 @@ export interface WordPressPost {
   content: { rendered: string };
   excerpt: { rendered: string };
   date: string;
+  modified?: string;
   author: number;
   _embedded?: {
     author?: Array<{ name: string }>;

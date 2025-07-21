@@ -6,10 +6,41 @@ import { notFound } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import WordPressService from '@/lib/wordpressService';
 import { WordPressPost } from '@/types/wordpress';
+import { generatePageMetadata, generateNewsSchema } from '@/lib/seo';
+import Breadcrumbs from '@/components/SEO/Breadcrumbs';
+import JsonLd from '@/components/SEO/JsonLd';
 
 const NewsSectionsSidebar = dynamic(() => import('@/components/news/NewsSectionsSidebar'), { ssr: false });
 
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const post = await getPostBySlug(params.slug);
+  
+  if (!post) {
+    return generatePageMetadata({
+      title: 'Noticia no encontrada',
+      description: 'La noticia que buscas no existe o ha sido eliminada.',
+      path: `/news/${params.slug}`
+    });
+  }
 
+  const cleanTitle = post.title.rendered.replace(/<[^>]+>/g, '');
+  const cleanDescription = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim();
+  const featuredImage = WordPressService.getFeaturedImage(post);
+  const author = WordPressService.getAuthor(post);
+  const category = post._embedded?.['wp:term']?.[0]?.[0]?.name;
+
+  return generatePageMetadata({
+    title: cleanTitle,
+    description: cleanDescription || `Lee la última noticia de ${category || 'Amplify Radio'}: ${cleanTitle}`,
+    image: featuredImage,
+    path: `/news/${post.slug}`,
+    type: 'article',
+    publishedTime: post.date,
+    author,
+    section: category,
+    keywords: `${cleanTitle}, ${category}, amplify radio, noticias, ${author}`
+  });
+}
 
 function addHeadingIds(html: string) {
     let count = 0;
@@ -43,15 +74,25 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
 
     const featuredImage = WordPressService.getFeaturedImage(post) || '/placeholder-news.jpg';
     const author = WordPressService.getAuthor(post);
-
     const formatDate = WordPressService.formatDate;
+    const cleanTitle = post.title.rendered.replace(/<[^>]+>/g, '');
+
+    const newsSchema = generateNewsSchema(post);
+    
+    const breadcrumbItems = [
+        { name: 'Inicio', url: 'https://amplifyradio.com' },
+        { name: 'Noticias', url: 'https://amplifyradio.com/news' },
+        { name: cleanTitle, url: `https://amplifyradio.com/news/${post.slug}` }
+    ];
 
     return (
         <>
+            <JsonLd data={newsSchema} />
             <div className="min-h-screen font-jost">
                 <Navbar />
                 <div className="px-4 sm:px-8">
                     <div className="max-w-7xl mx-auto relative mt-4">
+                        <Breadcrumbs items={breadcrumbItems} />
                         <div className="flex flex-col lg:flex-row gap-4 lg:gap-16">
                             <aside className="order-1 lg:order-2 w-full lg:w-72 flex flex-col gap-8">
                                 <div className="hidden lg:block">
@@ -65,7 +106,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
                                     </span>
                                 )}
                                 <h1 className="font-lexend text-3xl font-semibold text-[#C7C7C7] mb-2">
-                                    {post.title.rendered.replace(/<[^>]+>/g, '')}
+                                    {cleanTitle}
                                 </h1>
                                 <div className="mb-6 text-[#FFFFFF]/60 text-sm">
                                     {author} <span className="text-[#757575]">- {formatDate(post.date)}</span>
@@ -73,7 +114,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
                                 <div className="mb-8">
                                     <img
                                         src={featuredImage}
-                                        alt={post.title.rendered.replace(/<[^>]+>/g, '')}
+                                        alt={cleanTitle}
                                         className="w-full max-h-[400px] object-cover rounded-2xl mx-auto"
                                     />
                                 </div>

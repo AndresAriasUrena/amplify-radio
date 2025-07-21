@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import CategoryNewsGrid from '@/components/home/CategoryNewsGrid';
 import NewsGridWithImage from '@/components/home/NewsGridWithImage';
 
-export default function AboutUs() {
+export default function HomePage() {
 
   return (
     <>

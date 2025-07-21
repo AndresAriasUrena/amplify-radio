@@ -13,6 +13,20 @@ function NewsContent() {
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
+    document.title = 'Noticias | Amplify Radio - Últimas Noticias y Actualidad';
+    
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 
+        'Descubre las últimas noticias y actualidad en Amplify Radio. Mantente informado con nuestras noticias de música, entretenimiento y más.'
+      );
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'description';
+      meta.content = 'Descubre las últimas noticias y actualidad en Amplify Radio. Mantente informado con nuestras noticias de música, entretenimiento y más.';
+      document.head.appendChild(meta);
+    }
+
     if (filters.categories.length > 0) {
     }
   }, [filters]);
