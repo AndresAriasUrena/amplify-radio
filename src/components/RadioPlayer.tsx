@@ -68,7 +68,7 @@ const RadioPlayer = () => {
 
         if (!newSource) return;
 
-        if (previousSourceRef.current !== newSource || audio.paused) {
+        if (previousSourceRef.current !== newSource) {
           setIsLoading(true);
           audio.src = newSource;
           previousSourceRef.current = newSource;
@@ -84,6 +84,8 @@ const RadioPlayer = () => {
 
           await audio.play();
           setIsLoading(false);
+        } else if (audio.paused) {
+          await audio.play();
         }
       } catch (error) {
         console.error('Error al reproducir:', error);
