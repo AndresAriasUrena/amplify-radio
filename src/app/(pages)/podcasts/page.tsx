@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PodcastGrid from '@/components/podcasts/PodcastGrid';
@@ -27,7 +27,9 @@ function PodcastsContent() {
     <div className="px-4 sm:px-8">
       <div className="max-w-7xl mx-auto relative mt-4">
         <div className="flex">
-          <PodcastGrid onOpenFilters={() => {}} />
+          <Suspense>
+            <PodcastGrid onOpenFilters={() => {}} />
+          </Suspense>
         </div>
       </div>
     </div>

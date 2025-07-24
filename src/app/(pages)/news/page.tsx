@@ -1,7 +1,7 @@
 // src/app/(pages)/news/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import FilterSidebar from '@/components/news/FilterSidebar';
@@ -40,19 +40,23 @@ function NewsContent() {
       <div className="max-w-7xl mx-auto relative mt-4">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-16">
           <div className="flex-1 order-2 lg:order-1">
-            <NewsGrid 
-              filters={filters} 
-              onOpenFilters={() => setIsMobileFiltersOpen(true)}
-            />
+            <Suspense>
+              <NewsGrid 
+                filters={filters} 
+                onOpenFilters={() => setIsMobileFiltersOpen(true)}
+              />
+            </Suspense>
           </div>
 
           <div className="order-1 lg:order-2">
             <div className="hidden lg:block">
-              <FilterSidebar 
-                onFilterChange={handleFilterChange}
-                isMobileOpen={false}
-                setIsMobileOpen={() => {}}
-              />
+              <Suspense>
+                <FilterSidebar 
+                  onFilterChange={handleFilterChange}
+                  isMobileOpen={false}
+                  setIsMobileOpen={() => {}}
+                />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -68,11 +72,13 @@ function NewsContent() {
           isMobileFiltersOpen ? 'translate-x-0' : 'translate-x-full'
         }`}>
           <div className="p-4 h-full overflow-y-auto">
-            <FilterSidebar 
-              onFilterChange={handleFilterChange}
-              isMobileOpen={isMobileFiltersOpen}
-              setIsMobileOpen={setIsMobileFiltersOpen}
-            />
+            <Suspense>
+              <FilterSidebar 
+                onFilterChange={handleFilterChange}
+                isMobileOpen={isMobileFiltersOpen}
+                setIsMobileOpen={setIsMobileFiltersOpen}
+              />
+            </Suspense>
           </div>
         </div>
       </div>
