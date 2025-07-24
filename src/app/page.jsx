@@ -5,6 +5,7 @@ import Hero from '@/components/home/Hero';
 import Footer from '@/components/Footer';
 import CategoryNewsGrid from '@/components/home/CategoryNewsGrid';
 import NewsGridWithImage from '@/components/home/NewsGridWithImage';
+import PodcastsGridHome from '@/components/home/PodcastsGridHome';
 
 export default function HomePage() {
 
@@ -34,11 +35,14 @@ export default function HomePage() {
             />
           </div>
           <div className="mx-2">
-          <NewsGridWithImage
-            title="EN EL MUNDO"
-            maxPosts={4} 
-          />
+            <NewsGridWithImage
+              title="EN EL MUNDO"
+              maxPosts={4}
+            />
           </div>
+          <div className="mx-2 bg-[#121212] py-8 lg:py-16">
+              <PodcastsGridHome />
+            </div>
         </div>
       </div>
       <Footer />

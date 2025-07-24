@@ -10,39 +10,136 @@ import {
   SkipForward,
   Radio
 } from 'lucide-react';
+import { usePlayer } from '@/lib/PlayerContext';
+import Image from 'next/image';
 
 const RadioPlayer = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { playerState, togglePlay, playNext, playPrevious, setIsPlaying } = usePlayer();
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const radioUrl = "https://streams.radio.co/s7e8f19c33/listen";
+  const previousSourceRef = useRef<string>('');
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
-  const togglePlay = async () => {
-    if (!audioRef.current) return;
-
-    setIsLoading(true);
-    
-    try {
-      if (isPlaying) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-        audioRef.current.load();
-        setIsPlaying(false);
-      } else {
-        audioRef.current.src = radioUrl + '?t=' + Date.now();
-        audioRef.current.load();
-        await audioRef.current.play();
-        setIsPlaying(true);
-      }
-    } catch (error) {
-      console.error('Error al reproducir la radio:', error);
-      setIsPlaying(false);
-    } finally {
-      setIsLoading(false);
+  const cleanHtml = (htmlString: string): string => {
+    if (typeof window !== 'undefined') {
+      const div = document.createElement('div');
+      div.innerHTML = htmlString;
+      return div.textContent || div.innerText || '';
     }
+    return htmlString.replace(/<[^>]*>/g, '');
   };
+
+  const formatTime = (time: number): string => {
+    if (isNaN(time) || !isFinite(time)) return '0:00';
+    
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = Math.floor(time % 60);
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleAudioState = async () => {
+      try {
+        if (!playerState.isPlaying) {
+          audio.pause();
+          return;
+        }
+
+        let newSource = '';
+        if (playerState.type === 'radio') {
+          newSource = radioUrl + '?t=' + Date.now();
+        } else if (playerState.currentEpisode) {
+          newSource = playerState.currentEpisode.audioUrl;
+        }
+
+        if (!newSource) return;
+
+        if (previousSourceRef.current !== newSource || audio.paused) {
+          setIsLoading(true);
+          audio.src = newSource;
+          previousSourceRef.current = newSource;
+          
+          await new Promise((resolve) => {
+            const handleCanPlay = () => {
+              audio.removeEventListener('canplay', handleCanPlay);
+              resolve(true);
+            };
+            audio.addEventListener('canplay', handleCanPlay);
+            audio.load();
+          });
+
+          await audio.play();
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error al reproducir:', error);
+        setIsPlaying(false);
+        setIsLoading(false);
+      }
+    };
+
+    handleAudioState();
+  }, [playerState.isPlaying, playerState.type, playerState.currentEpisode, setIsPlaying]);
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (playerState.type === 'radio' || !progressBarRef.current || !audioRef.current) return;
+    
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = x / rect.width;
+    const newTime = percentage * duration;
+    
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const handleProgressMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (playerState.type === 'radio') return;
+    setIsDragging(true);
+    handleProgressClick(e);
+  };
+
+  const handleProgressMouseMove = (e: MouseEvent) => {
+    if (!isDragging || !progressBarRef.current || !audioRef.current) return;
+    
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+    const percentage = x / rect.width;
+    const newTime = percentage * duration;
+    
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const handleProgressMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleProgressMouseMove);
+      document.addEventListener('mouseup', handleProgressMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleProgressMouseMove);
+        document.removeEventListener('mouseup', handleProgressMouseUp);
+      };
+    }
+  }, [isDragging, duration]);
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
@@ -87,6 +184,22 @@ const RadioPlayer = () => {
     } as React.CSSProperties;
   };
 
+  const getProgressBackground = () => {
+    const percent = duration > 0 ? (currentTime / duration) * 100 : 0;
+    return {
+      '--progress': `${percent}%`
+    } as React.CSSProperties;
+  };
+
+  const canGoNext = playerState.type === 'podcast' && 
+    playerState.currentIndex !== undefined && 
+    playerState.episodesList && 
+    playerState.currentIndex < playerState.episodesList.length - 1;
+
+  const canGoPrevious = playerState.type === 'podcast' && 
+    playerState.currentIndex !== undefined && 
+    playerState.currentIndex > 0;
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[#1C1C1C] text-[#C7C7C7] z-50">
       <audio
@@ -95,29 +208,76 @@ const RadioPlayer = () => {
         onLoadStart={() => setIsLoading(true)}
         onCanPlay={() => setIsLoading(false)}
         onPlaying={() => {
-          setIsPlaying(true);
           setIsLoading(false);
         }}
-        onPause={() => setIsPlaying(false)}
+        onTimeUpdate={(e) => {
+          const audio = e.currentTarget;
+          setCurrentTime(audio.currentTime);
+          setDuration(audio.duration || 0);
+        }}
+        onLoadedMetadata={(e) => {
+          const audio = e.currentTarget;
+          setDuration(audio.duration || 0);
+        }}
         onError={handleError}
-        onStalled={handleError}
-        onSuspend={handleError}
+        onEnded={() => {
+          if (playerState.type === 'podcast' && canGoNext) {
+            playNext();
+          } else {
+            setIsPlaying(false);
+          }
+        }}
       />
       
-      <div className="flex items-center justify-between px-4 py-3 max-w-6xl mx-auto">
-        {/* Información de la radio */}
-        <div className="flex items-center space-x-3 min-w-0 flex-1">
-          <div className="flex items-center space-x-2">
-            <Radio className="w-5 h-5 text-[#E5754C]" />
-            <div className="min-w-0">
-              <p className="font-medium text-sm truncate">Radio en Vivo</p>
-              <p className="text-xs text-gray-400 truncate">
-                {isPlaying ? 'Transmisión en directo' : 'Pausado'}
-              </p>
+      {playerState.type === 'podcast' && (
+        <div className="w-full h-1 bg-gray-700 cursor-pointer">
+          <div 
+            ref={progressBarRef}
+            className="relative h-full group"
+            onClick={handleProgressClick}
+            onMouseDown={handleProgressMouseDown}
+          >
+            <div 
+              className="h-full bg-[#E5754C] relative radio-progress-bar"
+              style={getProgressBackground()}
+            >
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           </div>
-          {isPlaying && (
-            <div className="flex space-x-1">
+        </div>
+      )}
+      
+      <div className="flex items-center justify-between px-4 py-3 max-w-6xl mx-auto">
+        <div className="flex items-center space-x-3 min-w-0 flex-1">
+          <div className="flex items-center space-x-3">
+            {playerState.type === 'radio' ? (
+              <>
+                <Radio className="w-5 h-5 text-[#E5754C]" />
+                <div className="min-w-0">
+                  <p className="font-medium text-sm truncate">Radio en Vivo</p>
+                  <p className="text-xs text-gray-400 truncate">
+                    {playerState.isPlaying ? 'Transmisión en directo' : 'Pausado'}
+                  </p>
+                </div>
+              </>
+            ) : playerState.currentShow && playerState.currentEpisode ? (
+              <>
+                <Image
+                  src={playerState.currentShow.imageUrl || '/placeholder-podcast.jpg'}
+                  alt={cleanHtml(playerState.currentShow.title)}
+                  width={40}
+                  height={40}
+                  className="rounded-lg"
+                />
+                <div className="min-w-0 hidden lg:block">
+                  <p className="font-medium text-sm truncate">{cleanHtml(playerState.currentEpisode.title)}</p>
+                  <p className="text-xs text-gray-400 truncate">{cleanHtml(playerState.currentShow.title)}</p>
+                </div>
+              </>
+            ) : null}
+          </div>
+          {playerState.isPlaying && !isLoading && (
+            <div className="space-x-1 hidden lg:flex">
               <div className="w-1 h-4 bg-[#E5754C] animate-pulse rounded-full"></div>
               <div className="w-1 h-4 bg-[#E5754C] animate-pulse rounded-full animation-delay-200"></div>
               <div className="w-1 h-4 bg-[#E5754C] animate-pulse rounded-full animation-delay-400"></div>
@@ -125,45 +285,57 @@ const RadioPlayer = () => {
           )}
         </div>
 
-        {/* Controles principales */}
+        {playerState.type === 'podcast' && (
+          <div className="text-xs text-gray-400 mx-4">
+            {formatTime(currentTime)} / {formatTime(duration)}
+          </div>
+        )}
+
         <div className="flex items-center space-x-4">
-          {/* Botón anterior (deshabilitado) 
           <button
-            disabled
-            className="p-2 rounded-full bg-gray-700 text-gray-500 cursor-not-allowed"
-            title="Anterior (no disponible para radio en vivo)"
+            onClick={playNext}
+            disabled={!canGoNext}
+            className={`p-2 rounded-full transition-colors ${
+              canGoNext 
+                ? 'hover:bg-gray-700 hover:text-[#E5754C]' 
+                : 'text-gray-500 cursor-not-allowed'
+            }`}
+            title={playerState.type === 'radio' ? 'No disponible para radio en vivo' : 'Episodio anterior'}
           >
             <SkipBack className="w-4 h-4" />
-          </button>*/}
+          </button>
 
-          {/* Botón play/pause */}
           <button
             onClick={togglePlay}
             disabled={isLoading}
-            className="rounded-full hover:text-[#E5754C] duration-300 transition-all disabled:bg-[#E5754C] disabled:cursor-not-allowed"
-            title={isPlaying ? 'Pausar' : 'Reproducir en vivo'}
+            className="rounded-full hover:text-[#E5754C] duration-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            title={playerState.isPlaying ? 'Pausar' : 'Reproducir'}
           >
             {isLoading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : isPlaying ? (
+            ) : playerState.isPlaying ? (
               <Pause className="w-5 h-5" />
             ) : (
               <Play className="w-5 h-5 ml-0.5" />
             )}
           </button>
 
-          {/* Botón siguiente (deshabilitado) 
           <button
-            disabled
-            className="p-2 rounded-full bg-gray-700 text-gray-500 cursor-not-allowed"
-            title="Siguiente (no disponible para radio en vivo)"
+            onClick={playPrevious}
+            disabled={!canGoPrevious}
+            className={`p-2 rounded-full transition-colors ${
+              canGoPrevious 
+                ? 'hover:bg-gray-700 hover:text-[#E5754C]' 
+                : 'text-gray-500 cursor-not-allowed'
+            }`}
+            title={playerState.type === 'radio' ? 'No disponible para radio en vivo' : 'Siguiente episodio'}
           >
             <SkipForward className="w-4 h-4" />
-          </button>*/}
+          </button>
         </div>
 
         {/* Control de volumen */}
-        <div className="flex items-center space-x-3 min-w-0 flex-1 justify-end">
+        <div className="hidden lg:flex items-center space-x-3 min-w-0 flex-1 justify-end">
           <button
             onClick={toggleMute}
             className="p-2 rounded-full hover:bg-gray-700 transition-colors"

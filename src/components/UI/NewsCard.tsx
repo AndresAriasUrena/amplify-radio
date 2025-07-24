@@ -20,7 +20,7 @@ export default function NewsCard({ post }: NewsCardProps) {
     <Link href={`/news/${post.slug}`}>
       <article className="group overflow-hidden hover:scale-[1.02] transition-all duration-700">
         {/* Imagen de la noticia */}
-        <div className="relative aspect-[16/11] bg-gray-800 rounded-2xl">
+        <div className="relative aspect-[16/11] bg-[#232323] rounded-2xl">
           <Image
             src={featuredImage}
             alt={cleanTitle(post.title.rendered)}

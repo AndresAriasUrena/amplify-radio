@@ -100,7 +100,7 @@ export default function NewsGridWithImage({
       )}
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="relative aspect-[4/3] bg-gray-800 rounded-2xl overflow-hidden">
+        <div className="relative aspect-[4/3] bg-[#232323] rounded-2xl overflow-hidden">
           <Image
             src={featuredImage}
             alt={cleanTitle(displayPosts[selectedPostIndex].title.rendered)}

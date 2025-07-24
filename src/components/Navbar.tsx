@@ -3,7 +3,9 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSearch } from '@/lib/SearchContext';
+import { usePlayer } from '@/lib/PlayerContext';
 import Link from 'next/link';
+import { IoRadio } from 'react-icons/io5';
 
 interface NavLink {
   href: string;
@@ -13,11 +15,13 @@ interface NavLink {
 interface MenuItem {
   key: string;
   href: string;
+  isButton?: boolean;
 }
 
 export default function Navbar() {
   const pathname = usePathname();
   const { searchTerm, setSearchTerm } = useSearch();
+  const { playRadio } = usePlayer();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [localSearchTerm, setLocalSearchTerm] = useState('');
   const [activeLink, setActiveLink] = useState('services');
@@ -32,9 +36,8 @@ export default function Navbar() {
     { key: 'inicio', href: '/' },
     { key: 'noticias', href: '/news' },
     { key: 'podcasts', href: '/podcasts' },
-    { key: 'amplifiers', href: '/amplifiers' },
-    { key: 'en-vivo', href: '/en-vivo' },
-    { key: 'about-us', href: '/about-us' },
+    { key: 'en-vivo', href: '#', isButton: true },
+    { key: 'Nosotros', href: '/about-us' },
   ];
 
   const toggleMenu = () => {
@@ -68,6 +71,12 @@ export default function Navbar() {
     setLocalSearchTerm(value);
   };
 
+  const handleEnVivoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    playRadio();
+    closeMenu();
+  };
+
   return (
     <>
       <nav className="w-full h-[10vh] px-8">
@@ -78,18 +87,32 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links - Hidden on mobile */}
           <div className="hidden lg:flex items-center space-x-4">
-            {menuItems.map((item) => (
-              <Link
-                key={item.key}
-                href={item.href}
-                onClick={() => handleLinkClick(item.key)}
-                className={`text-white hover:text-[#E5754C] transition-colors px-5 py-2 rounded-full ${
-                  pathname === item.href ? 'border-[1.6px] border-[#E5754C] text-[#E5754C]' : ''
-                }`}
-              >
-                {item.key.charAt(0).toUpperCase() + item.key.slice(1)}
-              </Link>
-            ))}
+            {menuItems.map((item) => {
+              if (item.isButton) {
+                return (
+                  <button
+                    key={item.key}
+                    onClick={handleEnVivoClick}
+                    className="text-white hover:text-[#E5754C] transition-colors px-5 py-2 rounded-full flex items-center gap-2"
+                  >
+                    <IoRadio className="w-4 h-4" />
+                    {item.key.charAt(0).toUpperCase() + item.key.slice(1).replace('-', ' ')}
+                  </button>
+                );
+              }
+              return (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  onClick={() => handleLinkClick(item.key)}
+                  className={`text-white hover:text-[#E5754C] transition-colors px-5 py-2 rounded-full ${
+                    pathname === item.href ? 'border-[1.6px] border-[#E5754C] text-[#E5754C]' : ''
+                  }`}
+                >
+                  {item.key.charAt(0).toUpperCase() + item.key.slice(1)}
+                </Link>
+              );
+            })}
           </div>
           </div>
 
@@ -204,6 +227,18 @@ export default function Navbar() {
             <nav className="space-y-4">
               {menuItems.map((item) => {
                 const isActive = pathname === item.href;
+                if (item.isButton) {
+                  return (
+                    <button
+                      key={item.key}
+                      onClick={handleEnVivoClick}
+                      className="flex items-center px-6 py-3 text-lg transition-colors text-[#E5754C] font-bold w-full text-left"
+                    >
+                      <IoRadio className="w-5 h-5 mr-2" />
+                      {item.key.charAt(0).toUpperCase() + item.key.slice(1).replace('-', ' ')}
+                    </button>
+                  );
+                }
                 return (
                   <Link
                     key={item.key}

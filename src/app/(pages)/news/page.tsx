@@ -36,7 +36,7 @@ function NewsContent() {
   };
 
   return (
-    <div className="px-4 sm:px-8">
+    <div className="px-4 sm:px-8 py-2">
       <div className="max-w-7xl mx-auto relative mt-4">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-16">
           <div className="flex-1 order-2 lg:order-1">

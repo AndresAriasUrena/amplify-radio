@@ -52,7 +52,7 @@ export default function NewsCardGrid({ post }: NewsCardGridProps) {
           </div>
 
           {/* Imagen */}
-          <div className="relative h-48 md:h-56 bg-gray-800 rounded-xl overflow-hidden md:order-3 order-2 w-full md:w-[35%]">
+          <div className="relative h-48 md:h-56 bg-[#232323] rounded-xl overflow-hidden md:order-3 order-2 w-full md:w-[35%]">
             <Image
               src={featuredImage}
               alt={cleanTitle(post.title.rendered)}

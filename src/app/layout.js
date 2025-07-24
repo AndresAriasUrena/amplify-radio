@@ -1,5 +1,6 @@
 import "./globals.css";
 import { SearchProvider } from "@/lib/SearchContext";
+import { PlayerProvider } from "@/lib/PlayerContext";
 import RadioPlayer from "@/components/RadioPlayer";
 import { generatePageMetadata, generateOrganizationSchema, SEO_CONFIG } from "@/lib/seo";
 import Script from 'next/script';
@@ -51,8 +52,10 @@ export default function RootLayout({ children }) {
         </Script>
         
         <SearchProvider>
-          {children}
-          <RadioPlayer />
+          <PlayerProvider>
+            {children}
+            <RadioPlayer />
+          </PlayerProvider>
         </SearchProvider>
       </body>
     </html>
