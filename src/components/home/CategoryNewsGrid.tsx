@@ -1,16 +1,15 @@
 'use client';
 
-import { useState, useEffect, useContext, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import NewsCard from '../UI/NewsCard';
 import NewsCardGrid from '../UI/NewsCardGrid';
-import { SearchContext } from '@/lib/SearchContext';
 import WordPressService from '@/lib/wordpressService';
 import { WordPressPost, WordPressCategory } from '@/types/wordpress';
 import Link from 'next/link';
 
 interface CategoryNewsGridProps {
   title: string;
-  categorySlug?: string;
+  tagSlug?: string;
   maxPosts?: number;
   showLoadMore?: boolean;
   showCategories?: boolean;
@@ -20,7 +19,7 @@ interface CategoryNewsGridProps {
 
 export default function CategoryNewsGrid({
   title,
-  categorySlug,
+  tagSlug,
   showLoadMore = true,
   showCategories = false,
   cardType = 'default',
@@ -33,9 +32,9 @@ export default function CategoryNewsGrid({
   const [hasMore, setHasMore] = useState(true);
   const [totalPosts, setTotalPosts] = useState(0);
   const [categoryId, setCategoryId] = useState<number | null | undefined>(undefined);
+  const [tagId, setTagId] = useState<number | null | undefined>(undefined);
   const [categories, setCategories] = useState<WordPressCategory[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState(categorySlug || 'todas');
-  const { searchTerm } = useContext(SearchContext);
+  const [selectedCategory, setSelectedCategory] = useState('todas');
 
   const POSTS_PER_PAGE = 3;
 
@@ -53,6 +52,35 @@ export default function CategoryNewsGrid({
       fetchCategories();
     }
   }, [showCategories]);
+
+  useEffect(() => {
+    const getTagId = async () => {
+      try {
+        if (!tagSlug) {
+          setTagId(null);
+          setError(null);
+          return;
+        }
+
+        const result = await WordPressService.getTags();
+        const id = result.tagsMap[tagSlug];
+        
+        if (id) {
+          setTagId(id);
+          setError(null);
+        } else {
+          console.warn(`Tag "${tagSlug}" no encontrado en WordPress`);
+          setTagId(null);
+        }
+      } catch (error) {
+        console.error('Error loading tags map:', error);
+        setError('Error al cargar los tags');
+        setLoading(false);
+      }
+    };
+
+    getTagId();
+  }, [tagSlug]);
 
   useEffect(() => {
     const getCategoryId = async () => {
@@ -80,8 +108,10 @@ export default function CategoryNewsGrid({
       }
     };
 
-    getCategoryId();
-  }, [selectedCategory]);
+    if (showCategories) {
+      getCategoryId();
+    }
+  }, [selectedCategory, showCategories]);
 
   const fetchPosts = useCallback(async (pageNum: number = 1, append: boolean = false) => {
     try {
@@ -90,11 +120,25 @@ export default function CategoryNewsGrid({
       }
       setError(null);
 
+      if (tagSlug && !tagId) {
+        setPosts([]);
+        setTotalPosts(0);
+        setHasMore(false);
+        return;
+      }
+
+      if (showCategories && selectedCategory !== 'todas' && !categoryId) {
+        setPosts([]);
+        setTotalPosts(0);
+        setHasMore(false);
+        return;
+      }
+
       const result = await WordPressService.getPosts({
         page: pageNum,
         perPage: POSTS_PER_PAGE,
-        categories: categoryId ? [categoryId] : [],
-        search: searchTerm || '',
+        categories: showCategories && categoryId ? [categoryId] : [],
+        tags: tagId ? [tagId] : [],
         orderBy: 'date'
       });
 
@@ -109,17 +153,18 @@ export default function CategoryNewsGrid({
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido al cargar noticias');
+      setPosts([]);
     } finally {
       setLoading(false);
     }
-  }, [categoryId, searchTerm]);
+  }, [categoryId, tagId, showCategories, tagSlug, selectedCategory]);
 
   useEffect(() => {
-    if (categoryId !== undefined && !error) {
+    if ((tagId !== undefined || !tagSlug) && (categoryId !== undefined || !showCategories) && !error) {
       setPage(1);
       fetchPosts(1, false);
     }
-  }, [categoryId, error, fetchPosts]);
+  }, [categoryId, tagId, error, fetchPosts, tagSlug, showCategories]);
 
   const handleCategoryClick = (slug: string) => {
     setSelectedCategory(slug);
@@ -176,7 +221,7 @@ export default function CategoryNewsGrid({
 
           {showCategories && categories.length > 0 && (
             <div className="">
-              <div className="flex flex-wrap gap-2 overflow-x-auto pb-2">
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
                 <button
                   onClick={() => handleCategoryClick('todas')}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${selectedCategory === 'todas'
@@ -259,7 +304,6 @@ export default function CategoryNewsGrid({
         <div className="text-center py-12">
           <p className="text-[#C7C7C7] text-lg">
             No se encontraron noticias en esta categoría
-            {searchTerm && ` para "${searchTerm}"`}
           </p>
         </div>
       )}

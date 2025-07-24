@@ -173,7 +173,7 @@ const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen =
         <div className="h-0.5 w-full bg-[#E5754C] my-4" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <a
-            href="https://twitter.com/RadioCostaRica_"
+            href="https://x.com/amplifyradiofm"
             target="_blank"
             className="flex items-center border border-[#C7C7C7] text-[#C7C7C7] rounded-lg px-4 py-2 space-x-2 hover:border-[#E5754C] hover:text-[#E5754C] transition-colors"
           >
@@ -182,7 +182,7 @@ const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen =
           </a>
 
           <a
-            href="https://www.instagram.com/radio_costa_rica/"
+            href="https://www.instagram.com/amplifyradiofm/"
             target="_blank"
             className="flex items-center border border-[#C7C7C7] text-[#C7C7C7] rounded-lg px-4 py-2 space-x-2 hover:border-[#E5754C] hover:text-[#E5754C] transition-colors"
           >
@@ -191,7 +191,7 @@ const FilterSidebar = ({ onFilterChange, isMobileOpen = false, setIsMobileOpen =
           </a>
 
           <a
-            href="https://www.facebook.com/profile.php?id=100063517146066"
+            href="https://www.facebook.com/amplifyradiofm/"
             target="_blank"
             className="flex items-center border border-[#C7C7C7] text-[#C7C7C7] rounded-lg px-4 py-2 space-x-2 hover:border-[#E5754C] hover:text-[#E5754C] transition-colors"
           >

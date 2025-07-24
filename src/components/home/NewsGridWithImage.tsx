@@ -10,19 +10,48 @@ interface NewsGridWithImageProps {
   title?: string;
   maxPosts?: number;
   posts?: WordPressPost[];
+  tagSlug?: string;
 }
 
 export default function NewsGridWithImage({ 
   title, 
   maxPosts = 4,
-  posts: externalPosts 
+  posts: externalPosts,
+  tagSlug
 }: NewsGridWithImageProps) {
   const [posts, setPosts] = useState<WordPressPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPostIndex, setSelectedPostIndex] = useState(0);
+  const [tagId, setTagId] = useState<number | null | undefined>(undefined);
 
   const displayPosts = externalPosts || posts;
+
+  useEffect(() => {
+    const getTagId = async () => {
+      try {
+        if (!tagSlug) {
+          setTagId(null);
+          return;
+        }
+
+        const result = await WordPressService.getTags();
+        const id = result.tagsMap[tagSlug];
+        
+        if (id) {
+          setTagId(id);
+        } else {
+          console.warn(`Tag "${tagSlug}" no encontrado en WordPress`);
+          setTagId(null);
+        }
+      } catch (error) {
+        console.error('Error loading tags map:', error);
+        setTagId(null);
+      }
+    };
+
+    getTagId();
+  }, [tagSlug]);
 
   const fetchPosts = useCallback(async () => {
     if (externalPosts) return;
@@ -31,23 +60,32 @@ export default function NewsGridWithImage({
       setLoading(true);
       setError(null);
 
+      if (!tagId) {
+        setPosts([]);
+        return;
+      }
+
       const result = await WordPressService.getPosts({
         page: 1,
         perPage: maxPosts,
+        tags: [tagId],
         orderBy: 'date'
       });
 
       setPosts(result.posts);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido al cargar noticias');
+      setPosts([]);
     } finally {
       setLoading(false);
     }
-  }, [maxPosts, externalPosts]);
+  }, [maxPosts, externalPosts, tagId]);
 
   useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
+    if (tagId !== undefined || !tagSlug) {
+      fetchPosts();
+    }
+  }, [fetchPosts, tagId, tagSlug]);
 
   if (error) {
     return (

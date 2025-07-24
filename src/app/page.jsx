@@ -1,5 +1,4 @@
 'use client';
-import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/home/Hero';
 import Footer from '@/components/Footer';
@@ -13,12 +12,12 @@ export default function HomePage() {
     <>
       <div className="min-h-screen font-jost">
         <Navbar />
-        <Hero />
+        <Hero tagSlug="destacado" />
         <div className="space-y-10">
           <div className="mx-2 bg-[#121212] py-8 lg:py-16">
             <CategoryNewsGrid
               title="NOVEDADES"
-              categorySlug="test"
+              tagSlug="novedades"
             />
           </div>
           <div className="mx-2">
@@ -30,13 +29,14 @@ export default function HomePage() {
           <div className="mx-2 bg-[#121212] py-8 lg:py-16">
             <CategoryNewsGrid
               title="Tendencias Actuales"
-              categorySlug="test"
+              tagSlug="tendencias"
               cardType="grid"
             />
           </div>
           <div className="mx-2">
             <NewsGridWithImage
               title="EN EL MUNDO"
+              tagSlug="mundo"
               maxPosts={4}
             />
           </div>

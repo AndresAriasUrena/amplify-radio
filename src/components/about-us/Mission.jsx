@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Link from 'next/link';
 const Mission = () => {
   return (
     <section className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 bg-[#121212] rounded-2xl mx-2 mt-10">
@@ -16,9 +16,9 @@ const Mission = () => {
             Queremos amplificar todo lo que le interesa a una generación. <br className="hidden sm:block" />
             Creemos que la música tiene el poder de transformar, de unir, y de conectar a las personas, y por eso es uno de los pilares más importantes de la emisora.
           </p>
-          <button className="bg-[#E5754C] text-[#171717] px-6 py-2.5 sm:px-8 sm:py-3 rounded-full font-medium text-sm sm:text-base hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
+          <Link href="/podcasts/#schedule" className="bg-[#E5754C] text-[#171717] px-6 py-2.5 sm:px-8 sm:py-3 rounded-full font-medium text-sm sm:text-base hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
             Ver horarios
-          </button>
+          </Link>
         </div>
         {/* Columna derecha: imagen */}
         <div className="w-full lg:w-1/2 flex items-center justify-center">

@@ -6,14 +6,14 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import WordPressService from "@/lib/wordpressService";
 
-const Hero = () => {
+const Hero = ({ tagSlug = "hero" }) => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [tagId, setTagId] = useState(null);
   const sliderRef = useRef(null);
 
-  // Detectar si es mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -25,12 +25,50 @@ const Hero = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    const getTagId = async () => {
+      try {
+        if (!tagSlug) {
+          setTagId(null);
+          return;
+        }
+
+        const result = await WordPressService.getTags();
+        const id = result.tagsMap[tagSlug];
+        
+        if (id) {
+          setTagId(id);
+        } else {
+          console.warn(`Tag "${tagSlug}" no encontrado en WordPress`);
+          setTagId(null);
+        }
+      } catch (error) {
+        console.error('Error loading tags map:', error);
+        setTagId(null);
+      }
+    };
+
+    getTagId();
+  }, [tagSlug]);
+
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const data = await WordPressService.getHeroPosts(3);
-      // Reorganizar el array para que la más nueva (índice 0) aparezca en el centro
-      // Orden visual: [más antigua, más nueva, segunda más nueva]
+      
+      if (!tagId) {
+        setPosts([]);
+        return;
+      }
+
+      const result = await WordPressService.getPosts({
+        page: 1,
+        perPage: 3,
+        tags: [tagId],
+        orderBy: 'date'
+      });
+      
+      const data = result.posts;
+      
       if (data.length === 3) {
         const reorderedPosts = [data[2], data[0], data[1]];
         setPosts(reorderedPosts);
@@ -39,14 +77,17 @@ const Hero = () => {
       }
     } catch (error) {
       console.error('Error loading posts:', error);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    if (tagId !== undefined) {
+      fetchPosts();
+    }
+  }, [tagId]);
 
   const settings = {
     dots: true,
@@ -58,6 +99,8 @@ const Hero = () => {
     centerPadding: "0",
     initialSlide: 0,
     afterChange: (current) => setActiveSlide(current),
+    autoplay: true,           
+    autoplaySpeed: 5000,  
     arrows: false,
     responsive: [
       {

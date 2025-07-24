@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { IoArrowBack, IoPlay, IoTime, IoCalendar, IoArrowForward } from 'react-icons/io5';
 import PodcastsGridHome from '@/components/home/PodcastsGridHome';
 import { usePlayer } from '@/lib/PlayerContext';
+import ScheduleGrid from '@/components/podcasts/ScheduleGrid';
 
 export default function PodcastDetailPage() {
   const params = useParams();
@@ -113,14 +114,69 @@ export default function PodcastDetailPage() {
         <div className="min-h-screen font-jost">
           <Navbar />
           <div className="px-4 sm:px-8">
-            <div className="max-w-7xl mx-auto relative mt-4">
-              <div className="animate-pulse">
-                <div className="h-8 bg-[#232323] rounded mb-6 w-1/3"></div>
-                <div className="h-64 bg-[#232323] rounded-2xl mb-6"></div>
-                <div className="space-y-4">
-                  {Array.from({ length: 7 }).map((_, i) => (
-                    <div key={i} className="h-24 bg-[#232323] rounded-lg"></div>
-                  ))}
+            <div className="max-w-7xl mx-auto relative mt-4 flex flex-col lg:flex-row gap-4">
+              {/* Columna izquierda */}
+              <div className="w-full lg:w-[75%] lg:overflow-y-auto lg:max-h-[90vh] scrollbar-hide">
+                <div className="bg-[#1A1A1A] rounded-2xl">
+                  <div className="p-8">
+                    {/* Botón volver */}
+                    <div className="animate-pulse mb-8">
+                      <div className="h-4 bg-[#232323] rounded w-32"></div>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row gap-6 justify-between">
+                      <div className="flex-1">
+                        {/* Título y autor */}
+                        <div className="animate-pulse space-y-4 mb-6">
+                          <div className="h-8 bg-[#232323] rounded w-3/4"></div>
+                          <div className="h-4 bg-[#232323] rounded w-1/4"></div>
+                          <div className="space-y-2">
+                            <div className="h-4 bg-[#232323] rounded"></div>
+                            <div className="h-4 bg-[#232323] rounded"></div>
+                            <div className="h-4 bg-[#232323] rounded w-2/3"></div>
+                          </div>
+                        </div>
+                        {/* Botón reproducir */}
+                        <div className="animate-pulse">
+                          <div className="h-10 bg-[#232323] rounded-full w-36"></div>
+                        </div>
+                      </div>
+                      {/* Imagen */}
+                      <div className="animate-pulse flex-shrink-0">
+                        <div className="w-40 h-40 bg-[#232323] rounded-2xl"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Columna derecha - Episodios */}
+              <div className="w-full lg:w-[25%]">
+                <div className="animate-pulse">
+                  {/* Título y navegación */}
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="h-6 bg-[#232323] rounded w-32"></div>
+                    <div className="flex gap-2">
+                      <div className="h-6 w-6 bg-[#232323] rounded"></div>
+                      <div className="h-6 w-6 bg-[#232323] rounded"></div>
+                    </div>
+                  </div>
+                  {/* Línea separadora */}
+                  <div className="h-0.5 w-full bg-[#232323] mb-3"></div>
+                  {/* Lista de episodios */}
+                  <div className="space-y-2">
+                    {Array.from({ length: 7 }).map((_, i) => (
+                      <div key={i} className="bg-[#1A1A1A] rounded-xl p-3">
+                        <div className="space-y-2">
+                          <div className="h-5 bg-[#232323] rounded w-3/4"></div>
+                          <div className="flex gap-4">
+                            <div className="h-4 bg-[#232323] rounded w-24"></div>
+                            <div className="h-4 bg-[#232323] rounded w-16"></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -146,7 +202,7 @@ export default function PodcastDetailPage() {
                   href="/podcasts" 
                   className="text-[#C7C7C7] hover:text-[#E5754C] transition-colors"
                 >
-                  ← Volver a podcasts
+                  Volver a podcasts
                 </Link>
               </div>
             </div>
@@ -164,8 +220,8 @@ export default function PodcastDetailPage() {
       <div className="min-h-screen font-jost">
         <Navbar />
         <div className="px-4 sm:px-8">
-          <div className="max-w-7xl mx-auto relative mt-4 flex flex-col lg:flex-row gap-4">
-            <div className="w-full lg:w-[75%]">
+          <div className="max-w-7xl mx-auto relative mt-4 flex flex-col lg:flex-row gap-4 ">
+            <div className="w-full lg:w-[75%] lg:overflow-y-auto lg:max-h-[90vh] scrollbar-hide">
               <div className='bg-[#1A1A1A] rounded-2xl'>
                 <Link
                   href="/podcasts"
@@ -176,13 +232,13 @@ export default function PodcastDetailPage() {
                 </Link>
 
                 <div className="flex flex-col md:flex-row gap-6 p-8 justify-between lg:mb-14">
-                  <div className="flex-1">
+                  <div className="flex-1 order-2 lg:order-1">
                     <h1 className="font-lexend font-medium text-3xl text-[#EDEEF6] mb-1">
                       {cleanHtml(podcast.title)}
                     </h1>
                     {podcast.author && (
                       <p className="text-[#B4B4B4] mb-4 text-sm">
-                      <span className='text-white/30'>{podcast.category}</span> | {podcast.author}
+                      {podcast.author}
                       </p>
                     )}
                     <div 
@@ -199,7 +255,7 @@ export default function PodcastDetailPage() {
                       <IoPlay className='w-6 h-6 text-[#E5754C] bg-[#FFFFFF] rounded-full p-1 group-hover:text-[#FFFFFF] group-hover:bg-[#E5754C] transition-all duration-300' />
                     </button>
                   </div>
-                  <div className="flex-shrink-0 border-[#B4B4B4] rounded-2xl shadow-md shadow-black" style={{boxShadow: '2px 10px 10px 2px rgba(0, 0, 0, 0.9)'}}>
+                  <div className="flex-shrink-0 order-1 lg:order-2 border-[#B4B4B4] rounded-2xl shadow-md shadow-black" style={{boxShadow: '2px 10px 10px 2px rgba(0, 0, 0, 0.9)'}}>
                     <Image
                       src={podcast.imageUrl || '/placeholder-podcast.jpg'}
                       alt={cleanHtml(podcast.title)}
@@ -213,9 +269,12 @@ export default function PodcastDetailPage() {
                   <PodcastsGridHome />
                 </div>
               </div>
+              <div className='hidden lg:block'>
+                <ScheduleGrid />
+              </div>
             </div>
 
-            <div className='w-full lg:w-[25%]'>
+            <div className=' w-full lg:w-[25%]'>
               <div className='flex flex-row items-center justify-between'> 
                 <h2 className="font-lexend font-semibold text-xl">Episodios ({episodes.length})</h2> 
                 <div className='flex flex-row items-center gap-2'>

@@ -1,4 +1,4 @@
-import { WordPressPost, WordPressCategory, PostsResponse, CategoriesResponse, GetPostsOptions } from '@/types/wordpress';
+import { WordPressPost, WordPressCategory, WordPressTag, PostsResponse, CategoriesResponse, TagsResponse, GetPostsOptions } from '@/types/wordpress';
 
 const WORDPRESS_API_BASE = 'https://amplify.aurigital.com/wp-json/wp/v2';
 
@@ -8,6 +8,7 @@ class WordPressService {
       page = 1,
       perPage = 9,
       categories = [],
+      tags = [],
       search = '',
       orderBy = 'date',
       order = 'desc',
@@ -27,6 +28,10 @@ class WordPressService {
 
     if (categories.length > 0) {
       url += `&categories=${categories.join(',')}`;
+    }
+
+    if (tags.length > 0) {
+      url += `&tags=${tags.join(',')}`;
     }
 
     if (search) {
@@ -122,6 +127,50 @@ class WordPressService {
     }
   }
 
+  static async getTags(): Promise<TagsResponse> {
+    try {
+      const response = await fetch(`${WORDPRESS_API_BASE}/tags?per_page=100`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          return {
+            tags: [],
+            tagsMap: {}
+          };
+        }
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      const tags: WordPressTag[] = await response.json();
+      
+      if (!Array.isArray(tags)) {
+        console.warn('API response is not an array:', tags);
+        return {
+          tags: [],
+          tagsMap: {}
+        };
+      }
+      
+      const tagsMap: { [slug: string]: number } = {};
+      tags.forEach(tag => {
+        if (tag && tag.slug && tag.id) {
+          tagsMap[tag.slug] = tag.id;
+        }
+      });
+
+      return {
+        tags,
+        tagsMap
+      };
+    } catch (error) {
+      console.error('Error fetching tags:', error);
+      return {
+        tags: [],
+        tagsMap: {}
+      };
+    }
+  }
+
   static async getHeroPosts(limit = 6): Promise<WordPressPost[]> {
     try {
       const response = await fetch(
@@ -158,6 +207,15 @@ class WordPressService {
       return post._embedded.author[0].name;
     }
     return 'Autor desconocido';
+  }
+
+  static getPostTags(post: WordPressPost): string[] {
+    if (post._embedded && post._embedded['wp:term'] && post._embedded['wp:term'][1]) {
+      return post._embedded['wp:term'][1]
+        .filter(term => term.taxonomy === 'post_tag')
+        .map(tag => tag.name);
+    }
+    return [];
   }
 
   static formatDate(dateString: string): string {

@@ -7,10 +7,11 @@ export interface WordPressPost {
   date: string;
   modified?: string;
   author: number;
+  tags?: number[];
   _embedded?: {
     author?: Array<{ name: string }>;
     'wp:featuredmedia'?: Array<{ source_url: string }>;
-    'wp:term'?: Array<Array<{ id: number; name: string; slug: string }>>;
+    'wp:term'?: Array<Array<{ id: number; name: string; slug: string; taxonomy: string }>>;
   };
 }
 
@@ -23,6 +24,16 @@ export interface WordPressCategory {
   slug: string;
   taxonomy: string;
   parent: number;
+}
+
+export interface WordPressTag {
+  id: number;
+  count: number;
+  description: string;
+  link: string;
+  name: string;
+  slug: string;
+  taxonomy: string;
 }
 
 export interface FilterItem {
@@ -47,10 +58,16 @@ export interface CategoriesResponse {
   categoriesMap: { [slug: string]: number };
 }
 
+export interface TagsResponse {
+  tags: WordPressTag[];
+  tagsMap: { [slug: string]: number };
+}
+
 export interface GetPostsOptions {
   page?: number;
   perPage?: number;
   categories?: number[];
+  tags?: number[];
   search?: string;
   orderBy?: 'date' | 'title-asc' | 'title-desc';
   order?: 'asc' | 'desc';

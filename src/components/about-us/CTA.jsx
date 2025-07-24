@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 const CTA = () => {
   return (
@@ -26,12 +27,12 @@ const CTA = () => {
             </span>
           </p>
           <div className="flex gap-4 text-[12px] lg:text-[18px]">
-            <button className="bg-[#E5754C] text-[#171717] px-6 py-2 rounded-full font-medium hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
+            <Link href="/contact" className="bg-[#E5754C] text-[#171717] px-6 py-2 rounded-full font-medium hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
               Contáctanos
-            </button>
-            <button className="border border-[#E5754C] text-[#E5754C] px-6 py-2 rounded-full font-medium hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
+            </Link>
+            <Link href="/podcasts/#schedule" className="border border-[#E5754C] text-[#E5754C] px-6 py-2 rounded-full font-medium hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
               Ver horarios
-            </button>
+            </Link>
           </div>
         </div>
       </div>

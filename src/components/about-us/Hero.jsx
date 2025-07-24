@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Link from 'next/link';
 const Hero = () => {
   return (
     <section className="w-full lg:h-[90vh] flex flex-col gap-8 items-center justify-start px-8 pt-8">
@@ -18,12 +18,12 @@ const Hero = () => {
             Más que una emisora, somos una comunidad viva donde convergen la música, el entretenimiento, la cultura y las voces que marcan el ritmo de una generación. En Amplify Radio conectamos historias, emociones y sonidos que inspiran.
           </p>
           <div className="flex gap-4 lg:mr-auto text-[12px] lg:text-[18px]">
-            <button className="bg-[#E5754C] text-[#171717] px-6 py-2 rounded-full font-medium hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
+            <Link href="/contact" className="bg-[#E5754C] text-[#171717] px-6 py-2 rounded-full font-medium hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
               Contáctanos
-            </button>
-            <button className="border border-[#E5754C] text-[#E5754C] px-6 py-2 rounded-full font-medium hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
+            </Link>
+            <Link href="/podcasts/#schedule" className="border border-[#E5754C] text-[#E5754C] px-6 py-2 rounded-full font-medium hover:shadow-md hover:shadow-[#E5754C]/50 transition-all duration-300">
               Ver horarios
-            </button>
+            </Link>
           </div>
         </div>
       </div>
