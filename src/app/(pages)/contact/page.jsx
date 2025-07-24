@@ -38,7 +38,7 @@ export default function Contact() {
 
   return (
     <>
-      <div className="min-h-screen font-jost">
+      <div className="min-h-screen font-jost overflow-hidden">
         <Navbar />
         <ContactForm />
         <Location />
