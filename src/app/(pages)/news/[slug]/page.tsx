@@ -50,6 +50,18 @@ function addHeadingIds(html: string) {
     });
 }
 
+function removeFeaturedImageFromContent(html: string, featuredImageUrl: string): string {
+    if (!featuredImageUrl || featuredImageUrl === '/placeholder-news.jpg') {
+        return html;
+    }
+    
+    const imageBase = featuredImageUrl.split('/').pop()?.split('.')[0];
+    if (!imageBase) return html;
+    
+    const imgRegex = new RegExp(`<img[^>]*src="[^"]*${imageBase}[^"]*"[^>]*>`, 'i');
+    return html.replace(imgRegex, '');
+}
+
 async function getPostBySlug(slug: string): Promise<WordPressPost | null> {
     return await WordPressService.getPostBySlug(slug);
 }
@@ -62,7 +74,10 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
     const post = await getPostBySlug(params.slug);
     if (!post) return notFound();
 
-    const htmlWithIds = addHeadingIds(post.content.rendered);
+    const featuredImage = WordPressService.getFeaturedImage(post) || '/placeholder-news.jpg';
+    
+    const contentWithoutFeaturedImage = removeFeaturedImageFromContent(post.content.rendered, featuredImage);
+    const htmlWithIds = addHeadingIds(contentWithoutFeaturedImage);
 
     const mainCategory = post._embedded?.['wp:term']?.[0]?.[0];
     const categoryId = mainCategory?.id;
@@ -72,7 +87,6 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
         relatedPosts = await getRelatedPosts(categoryId, post.id);
     }
 
-    const featuredImage = WordPressService.getFeaturedImage(post) || '/placeholder-news.jpg';
     const author = WordPressService.getAuthor(post);
     const formatDate = WordPressService.formatDate;
     const cleanTitle = post.title.rendered.replace(/<[^>]+>/g, '');

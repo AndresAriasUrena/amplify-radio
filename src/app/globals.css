@@ -98,7 +98,6 @@ body {
 .prose h4.wp-block-heading {
   font-weight: bold;
   color: #E5754C;
-  margin-top: 1.5em;
   margin-bottom: 0.5em;
 }
 
@@ -129,13 +128,11 @@ body {
 .prose h1, .prose .wp-block-heading.h1 {
   font-size: 2.5rem;
   line-height: 1.1;
-  margin-top: 2em;
   margin-bottom: 1em;
 }
 .prose h2, .prose .wp-block-heading.h2 {
   font-size: 2rem;
   line-height: 1.15;
-  margin-top: 1.5em;
   margin-bottom: 0.75em;
 }
 .prose h3, .prose .wp-block-heading.h3 {
