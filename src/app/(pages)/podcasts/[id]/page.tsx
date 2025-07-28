@@ -9,6 +9,7 @@ import { PodcastShow, PodcastEpisode } from '@/types/podcast';
 import Image from 'next/image';
 import Link from 'next/link';
 import { IoArrowBack, IoPlay, IoTime, IoCalendar, IoArrowForward } from 'react-icons/io5';
+import { FaInstagram } from "react-icons/fa";
 import PodcastsGridHome from '@/components/home/PodcastsGridHome';
 import { usePlayer } from '@/lib/PlayerContext';
 import ScheduleGrid from '@/components/podcasts/ScheduleGrid';
@@ -21,6 +22,7 @@ export default function PodcastDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const { playEpisode, playerState } = usePlayer();
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentAuthorIndex, setCurrentAuthorIndex] = useState(0);
   const EPISODES_PER_PAGE = 7;
 
   const cleanHtml = (htmlString: string): string => {
@@ -274,71 +276,133 @@ export default function PodcastDetailPage() {
               </div>
             </div>
 
-            <div className=' w-full lg:w-[25%]'>
-              <div className='flex flex-row items-center justify-between'> 
-                <h2 className="font-lexend font-semibold text-xl">Episodios ({episodes.length})</h2> 
-                <div className='flex flex-row items-center gap-2'>
-                  <button
-                    className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <IoArrowBack className='w-4 h-4' />
-                  </button>
-                  <button
-                    className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                  >
-                    <IoArrowForward className='w-4 h-4' />
-                  </button>
-                </div>
-              </div>
-              <div className="h-0.5 w-full bg-[#E5754C] my-3" />
-              <div className="space-y-2">
-                {paginatedEpisodes.map((episode, index) => {
-                  const globalIndex = (currentPage - 1) * EPISODES_PER_PAGE + index;
-                  const isPlaying = isPlayingThisPodcast && 
-                    playerState.currentEpisode?.id === episode.id && 
-                    playerState.isPlaying;
-                  return (
+            <div className='w-full lg:w-[25%] lg:overflow-y-auto lg:max-h-[90vh] scrollbar-hide'>
+              <div className=''>
+                <div className='flex flex-row items-center justify-between'>
+                  <h2 className="font-lexend font-semibold text-xl uppercase">CAPITULOS ({episodes.length})</h2>
+                  <div className='flex flex-row items-center gap-2'>
                     <button
-                      key={episode.id}
-                      onClick={() => handlePlayEpisode(episode, globalIndex)}
-                      className={`bg-[#1A1A1A] rounded-xl p-3 hover:bg-[#232323] transition-colors group w-full ${
-                        isPlaying ? 'bg-[#232323] border border-[#E5754C]' : ''
-                      }`}
+                      className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
                     >
-                      <div className="flex items-start text-left gap-4">
-                        <div className="flex flex-col w-full">
-                          <div className="flex items-center gap-2">
-                            {isPlaying && (
-                              <div className="flex space-x-1">
-                                <div className="w-1 h-3 bg-[#E5754C] animate-pulse rounded-full"></div>
-                                <div className="w-1 h-3 bg-[#E5754C] animate-pulse rounded-full animation-delay-200"></div>
-                                <div className="w-1 h-3 bg-[#E5754C] animate-pulse rounded-full animation-delay-400"></div>
-                              </div>
-                            )}
-                            <h3 className="font-urbanist text-md font-medium text-[#B4B4B4] line-clamp-2 titlecase flex-1">
-                              {cleanHtml(episode.title)}
-                            </h3>
-                          </div>
-                          <div className="flex items-end gap-4 text-sm text-[#9A9898] mt-1">
-                            <span className="flex items-center gap-1">
-                              <IoCalendar className="w-4 h-4" />
-                              {formatDate(episode.pubDate)}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <IoTime className="w-4 h-4" />
-                              {formatTime(episode.duration)}
-                            </span>
+                      <IoArrowBack className='w-4 h-4' />
+                    </button>
+                    <button
+                      className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      <IoArrowForward className='w-4 h-4' />
+                    </button>
+                  </div>
+                </div>
+                <div className="h-0.5 w-full bg-[#E5754C] my-3" />
+                <div className="space-y-2">
+                  {paginatedEpisodes.map((episode, index) => {
+                    const globalIndex = (currentPage - 1) * EPISODES_PER_PAGE + index;
+                    const isPlaying = isPlayingThisPodcast &&
+                      playerState.currentEpisode?.id === episode.id &&
+                      playerState.isPlaying;
+                    return (
+                      <button
+                        key={episode.id}
+                        onClick={() => handlePlayEpisode(episode, globalIndex)}
+                        className={`bg-[#1A1A1A] rounded-xl p-3 hover:bg-[#232323] transition-colors group w-full ${isPlaying ? 'bg-[#232323] border border-[#E5754C]' : ''
+                          }`}
+                      >
+                        <div className="flex items-start text-left gap-4">
+                          <div className="flex flex-col w-full">
+                            <div className="flex items-center gap-2">
+                              {isPlaying && (
+                                <div className="flex space-x-1">
+                                  <div className="w-1 h-3 bg-[#E5754C] animate-pulse rounded-full"></div>
+                                  <div className="w-1 h-3 bg-[#E5754C] animate-pulse rounded-full animation-delay-200"></div>
+                                  <div className="w-1 h-3 bg-[#E5754C] animate-pulse rounded-full animation-delay-400"></div>
+                                </div>
+                              )}
+                              <h3 className="font-urbanist text-md font-medium text-[#B4B4B4] line-clamp-2 titlecase flex-1">
+                                {cleanHtml(episode.title)}
+                              </h3>
+                            </div>
+                            <div className="flex items-end gap-4 text-sm text-[#9A9898] mt-1">
+                              <span className="flex items-center gap-1">
+                                <IoCalendar className="w-4 h-4" />
+                                {formatDate(episode.pubDate)}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <IoTime className="w-4 h-4" />
+                                {formatTime(episode.duration)}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
+
+              {podcast?.authors && podcast.authors.length > 0 && (
+                <div className='mt-5'>
+                  <div className='flex flex-row items-center justify-between'>
+                    <h2 className="font-lexend font-semibold text-xl uppercase">Amplifiers</h2>
+                    <div className='flex flex-row items-center gap-2'>
+                      {podcast?.authors && podcast.authors.length > 1 && (
+                        <>
+                          <span className="text-sm text-[#C7C7C7]/60 mr-2">
+                            {currentAuthorIndex + 1} / {podcast.authors.length}
+                          </span>
+                          <button
+                            className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentAuthorIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={() => setCurrentAuthorIndex((i) => Math.max(0, i - 1))}
+                            disabled={currentAuthorIndex === 0}
+                          >
+                            <IoArrowBack className='w-4 h-4' />
+                          </button>
+                          <button
+                            className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentAuthorIndex === (podcast?.authors?.length || 1) - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={() => setCurrentAuthorIndex((i) => Math.min((podcast?.authors?.length || 1) - 1, i + 1))}
+                            disabled={currentAuthorIndex === (podcast?.authors?.length || 1) - 1}
+                          >
+                            <IoArrowForward className='w-4 h-4' />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <div className="h-0.5 w-full bg-[#E5754C] my-3" />
+                  <div className="bg-[#1A1A1A] rounded-xl p-4">
+                    <div className='flex flex-col gap-2'>
+                      <div className='relative rounded-2xl'>
+                        <Image 
+                          src={podcast.authors[currentAuthorIndex]?.imageUrl || '/placeholder-author.jpg'} 
+                          alt={podcast.authors[currentAuthorIndex]?.name || 'Amplifier'} 
+                          width={100} 
+                          height={100} 
+                          className='rounded-2xl w-full aspect-square object-cover' 
+                        />
+                        <a 
+                          href={podcast.authors[currentAuthorIndex]?.instagramUrl || '#'} 
+                          target='_blank' 
+                          className="absolute top-2 left-2 bg-[#E5754C] rounded-md p-1 flex items-center shadow-md shadow-black" 
+                          style={{boxShadow: '2px 10px 10px 2px rgba(0, 0, 0, 0.9)'}}
+                        >
+                          <FaInstagram className="w-8 h-8 text-[#FFFFFF]"/>
+                        </a>
+                      </div>
+                      <div className='flex flex-col gap-1'>
+                        <h3 className='font-lexend font-medium text-lg text-[#C7C7C7]'>
+                          {podcast.authors[currentAuthorIndex]?.name || 'Amplifier'}
+                        </h3>
+                        <p className='text-sm text-[#C7C7C7]/60 leading-tight'>
+                          {podcast.authors[currentAuthorIndex]?.description || 'Descripción del amplifier'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

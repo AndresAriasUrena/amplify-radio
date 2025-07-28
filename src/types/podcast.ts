@@ -1,3 +1,10 @@
+export interface Author {
+  name: string;
+  description: string;
+  imageUrl: string;
+  instagramUrl: string;
+}
+
 export interface PodcastShow {
   id: string;
   title: string;
@@ -9,6 +16,7 @@ export interface PodcastShow {
   author?: string;
   category?: string;
   lastBuildDate?: string;
+  authors?: Author[];
 }
 
 export interface PodcastEpisode {
