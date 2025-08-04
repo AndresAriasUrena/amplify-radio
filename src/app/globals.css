@@ -30,6 +30,7 @@ body {
   color: var(--foreground);
   font-family: 'Jost', sans-serif;
   padding-bottom: 65px; 
+  
 }
 
 .radio-player-container {

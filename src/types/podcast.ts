@@ -2,21 +2,25 @@ export interface Author {
   name: string;
   description: string;
   imageUrl: string;
-  instagramUrl: string;
+  instagramUrl?: string;
+  status: 'actual' | 'historial';
+  podcastName: string;
+  podcastId: string;
 }
 
 export interface PodcastShow {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
-  link: string;
+  imageUrl?: string;
+  link?: string;
   rssUrl: string;
   language?: string;
   author?: string;
   category?: string;
   lastBuildDate?: string;
   authors?: Author[];
+  status: 'actual' | 'historial';
 }
 
 export interface PodcastEpisode {
