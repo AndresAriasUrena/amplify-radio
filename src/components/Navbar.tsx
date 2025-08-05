@@ -36,6 +36,7 @@ export default function Navbar() {
     { key: 'inicio', href: '/' },
     { key: 'noticias', href: '/news' },
     { key: 'podcasts', href: '/podcasts' },
+    { key: 'amplifiers', href: '/amplifiers' },
     { key: 'en-vivo', href: '#', isButton: true },
     { key: 'Nosotros', href: '/about-us' },
   ];

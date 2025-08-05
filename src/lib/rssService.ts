@@ -1,4 +1,6 @@
 import { RSSFeedData, PodcastShow, PodcastEpisode, Author } from '@/types/podcast';
+import { RSS_CONFIG, retryOperation } from './rssConfig';
+import * as xml2js from 'xml2js';
 
 const PODCAST_RSS_FEEDS = [
   // ACTUALES
@@ -370,7 +372,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
 class RSSService {
   private static instance: RSSService;
   private cache: Map<string, { data: RSSFeedData; timestamp: number }> = new Map();
-  private readonly CACHE_DURATION = 30 * 60 * 1000;
+  private readonly CACHE_DURATION = RSS_CONFIG.CACHE_DURATION;
 
   static getInstance(): RSSService {
     if (!RSSService.instance) {
@@ -379,108 +381,105 @@ class RSSService {
     return RSSService.instance;
   }
 
-  private parseRSSXML(xmlString: string): RSSFeedData {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
-    const channel = xmlDoc.querySelector('channel');
-    if (!channel) {
-      throw new Error('Feed RSS inválido: no se encontró el canal');
-    }
+  private async parseRSSXML(xmlString: string): Promise<RSSFeedData> {
+    return new Promise((resolve, reject) => {
+      const parser = new xml2js.Parser({
+        explicitArray: false,
+        ignoreAttrs: false,
+        mergeAttrs: true
+      });
 
-    const title = channel.querySelector('title')?.textContent?.trim() || '';
-    const description = channel.querySelector('description')?.textContent?.trim() || '';
-    const link = channel.querySelector('link')?.textContent?.trim() || '';
-    const language = channel.querySelector('language')?.textContent?.trim() || undefined;
-    const authorValue = channel.querySelector('author')?.textContent?.trim() ||
-      channel.querySelector('itunes\\:author, *[itunes\\:author]')?.textContent?.trim() ||
-      channel.querySelector('[*|author]')?.textContent?.trim();
-    const author = authorValue || undefined;
-    const categoryValue = channel.querySelector('category')?.textContent?.trim() ||
-      channel.querySelector('itunes\\:category, *[itunes\\:category]')?.getAttribute('text') ||
-      channel.querySelector('[*|category]')?.getAttribute('text');
-    const category = categoryValue || undefined;
-    const lastBuildDate = channel.querySelector('lastBuildDate')?.textContent?.trim() || undefined;
+      parser.parseString(xmlString, (err, result) => {
+        if (err) {
+          reject(new Error(`Error parsing XML: ${err.message}`));
+          return;
+        }
 
-    let image = '';
-    const itunesImage = channel.querySelector('itunes\\:image, *[itunes\\:image], [*|image]');
-    if (itunesImage) {
-      image = itunesImage.getAttribute('href') || itunesImage.getAttribute('url') || '';
-    }
-    if (!image) {
-      const imageElement = channel.querySelector('image');
-      if (imageElement) {
-        const urlElement = imageElement.querySelector('url');
-        if (urlElement) {
-          image = urlElement.textContent?.trim() || '';
-        }
-      }
-    }
-
-    const items = Array.from(channel.querySelectorAll('item'));
-    const episodes = items.map(item => {
-      const episodeTitle = item.querySelector('title')?.textContent?.trim() || '';
-      const episodeDescription = item.querySelector('description')?.textContent?.trim() || '';
-      const pubDate = item.querySelector('pubDate')?.textContent?.trim() || '';
-      const guid = item.querySelector('guid')?.textContent?.trim() || '';
-      const enclosure = item.querySelector('enclosure');
-      let audioUrl = '';
-      if (enclosure) {
-        audioUrl = enclosure.getAttribute('url') || '';
-        const type = enclosure.getAttribute('type') || '';
-        if (!type.includes('audio') && !audioUrl.match(/\.(mp3|m4a|aac|ogg|wav)$/i)) {
-          console.warn('Enclosure no parece ser audio:', audioUrl);
-        }
-      }
-      if (!audioUrl) {
-        const mediaContent = item.querySelector('media\\:content, *[media\\:content]');
-        if (mediaContent && mediaContent.getAttribute('type')?.includes('audio')) {
-          audioUrl = mediaContent.getAttribute('url') || '';
-        }
-      }
-      let duration = '';
-      const itunesDuration = item.querySelector('itunes\\:duration, *[itunes\\:duration], [*|duration]');
-      if (itunesDuration) {
-        const durationText = itunesDuration.textContent?.trim() || '';
-        if (durationText && !durationText.includes(':')) {
-          const totalSeconds = parseInt(durationText);
-          if (!isNaN(totalSeconds)) {
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            if (hours > 0) {
-              duration = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            } else {
-              duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }
-          } else {
-            duration = durationText;
+        try {
+          const rss = result.rss;
+          if (!rss || !rss.channel) {
+            reject(new Error('Feed RSS inválido: no se encontró el canal'));
+            return;
           }
-        } else {
-          duration = durationText || '00:00';
-        }
-      }
 
-      return {
-        title: episodeTitle,
-        description: episodeDescription,
-        audioUrl,
-        duration: duration || '00:00',
-        pubDate,
-        guid
-      };
+          const channel = rss.channel;
+          const title = channel.title || '';
+          const description = channel.description || '';
+          const link = channel.link || '';
+          const language = channel.language || undefined;
+          const author = channel.author || channel['itunes:author'] || undefined;
+          const category = channel.category || (channel['itunes:category'] && channel['itunes:category'].text) || undefined;
+          const lastBuildDate = channel.lastBuildDate || undefined;
+
+          let image = '';
+          if (channel['itunes:image'] && channel['itunes:image'].href) {
+            image = channel['itunes:image'].href;
+          } else if (channel.image && channel.image.url) {
+            image = channel.image.url;
+          }
+
+          const items = Array.isArray(channel.item) ? channel.item : [channel.item].filter(Boolean);
+          const episodes = items.map((item: any) => {
+            const episodeTitle = item.title || '';
+            const episodeDescription = item.description || '';
+            const pubDate = item.pubDate || '';
+            const guid = item.guid || '';
+            
+            let audioUrl = '';
+            if (item.enclosure && item.enclosure.url) {
+              audioUrl = item.enclosure.url;
+            } else if (item['media:content'] && item['media:content'].url) {
+              audioUrl = item['media:content'].url;
+            }
+
+            let duration = '';
+            if (item['itunes:duration']) {
+              const durationText = item['itunes:duration'];
+              if (durationText && !durationText.includes(':')) {
+                const totalSeconds = parseInt(durationText);
+                if (!isNaN(totalSeconds)) {
+                  const hours = Math.floor(totalSeconds / 3600);
+                  const minutes = Math.floor((totalSeconds % 3600) / 60);
+                  const seconds = totalSeconds % 60;
+                  if (hours > 0) {
+                    duration = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                  } else {
+                    duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                  }
+                } else {
+                  duration = durationText;
+                }
+              } else {
+                duration = durationText || '00:00';
+              }
+            }
+
+            return {
+              title: episodeTitle,
+              description: episodeDescription,
+              audioUrl,
+              duration: duration || '00:00',
+              pubDate,
+              guid
+            };
+          });
+
+          resolve({
+            title,
+            description,
+            image,
+            link,
+            language,
+            author,
+            category,
+            lastBuildDate,
+            episodes
+          });
+                 } catch (error) {
+           reject(new Error(`Error processing RSS data: ${(error as Error).message}`));
+         }
+      });
     });
-
-    return {
-      title,
-      description,
-      image,
-      link,
-      language,
-      author,
-      category,
-      lastBuildDate,
-      episodes
-    };
   }
 
   private async fetchRSSFeed(url: string): Promise<RSSFeedData> {
@@ -489,14 +488,18 @@ class RSSService {
       return cached.data;
     }
 
-    try {
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    return retryOperation(async () => {
+      const apiUrl = `/api/rss?url=${encodeURIComponent(url)}`;
       
-      // Agregar timeout de 10 segundos
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), RSS_CONFIG.REQUEST_TIMEOUT);
       
-      const response = await fetch(proxyUrl, { signal: controller.signal });
+      const response = await fetch(apiUrl, { 
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
       clearTimeout(timeoutId);
       
       if (!response.ok) {
@@ -504,13 +507,15 @@ class RSSService {
       }
 
       const data = await response.json();
-      const rssData = this.parseRSSXML(data.contents);
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      const rssData = await this.parseRSSXML(data.content);
       this.cache.set(url, { data: rssData, timestamp: Date.now() });
       return rssData;
-    } catch (error) {
-      console.error(`Error al obtener RSS feed ${url}:`, error);
-      throw error;
-    }
+    });
   }
 
   async getAllPodcasts(): Promise<PodcastShow[]> {
@@ -537,18 +542,39 @@ class RSSService {
         return show;
       } catch (error) {
         console.error(`Error al procesar podcast ${rssUrl.url}:`, error);
-        // Retornar null para feeds que fallan, los filtraremos después
-        return null;
+        
+        // Crear un podcast de respaldo con información básica si falla
+        const fallbackShow: PodcastShow = {
+          id: this.generateIdFromUrl(rssUrl.url),
+          title: PODCAST_AUTHORS[rssUrl.url]?.[0]?.podcastName || 'Podcast',
+          description: 'Información temporalmente no disponible',
+          imageUrl: PODCAST_AUTHORS[rssUrl.url]?.[0]?.imageUrl || '/assets/autores/EmmaTristan.jpeg',
+          link: rssUrl.url,
+          rssUrl: rssUrl.url,
+          language: 'es',
+          author: undefined,
+          category: undefined,
+          lastBuildDate: undefined,
+          authors: PODCAST_AUTHORS[rssUrl.url] || [],
+          status: rssUrl.status
+        };
+        
+        return fallbackShow;
       }
     });
     
-    // Esperar a que todos terminen y filtrar los que fallaron
+    // Esperar a que todos terminen y filtrar los que fallaron completamente
     const results = await Promise.allSettled(promises);
     results.forEach(result => {
       if (result.status === 'fulfilled' && result.value) {
         shows.push(result.value);
       }
     });
+    
+    // Si no se pudo obtener ningún podcast, lanzar un error
+    if (shows.length === 0) {
+      throw new Error('No se pudo cargar ningún podcast. Verifica tu conexión a internet.');
+    }
     
     return shows;
   }
@@ -569,7 +595,8 @@ class RSSService {
       }));
     } catch (error) {
       console.error(`Error al obtener episodios para ${rssUrl}:`, error);
-      throw error;
+      // Retornar array vacío en lugar de lanzar error
+      return [];
     }
   }
 

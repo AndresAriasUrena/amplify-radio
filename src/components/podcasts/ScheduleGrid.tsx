@@ -97,7 +97,7 @@ export default function ScheduleGrid() {
                 <div className="font-lexend font-semibold text-sm uppercase">
                   {day.day}
                 </div>
-                <div className="text-sm text-[#B4B4B4] group-hover:text-white">
+                <div className="text-sm text-[#B4B4B4] ">
                   {day.subtitle}
                 </div>
               </div>
