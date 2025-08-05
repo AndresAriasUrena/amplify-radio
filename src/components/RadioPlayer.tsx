@@ -271,7 +271,7 @@ const RadioPlayer = () => {
                   height={40}
                   className="rounded-lg"
                 />
-                <div className="min-w-0 hidden lg:block">
+                <div className="min-w-0 hidden lg:block max-w-[300px]">
                   <p className="font-medium text-sm truncate">{cleanHtml(playerState.currentEpisode.title)}</p>
                   <p className="text-xs text-gray-400 truncate">{cleanHtml(playerState.currentShow.title)}</p>
                 </div>

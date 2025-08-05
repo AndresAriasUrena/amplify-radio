@@ -36,6 +36,7 @@ export default function Navbar() {
     { key: 'inicio', href: '/' },
     { key: 'noticias', href: '/news' },
     { key: 'podcasts', href: '/podcasts' },
+    { key: 'amplifiers', href: '/amplifiers' },
     { key: 'en-vivo', href: '#', isButton: true },
     { key: 'Nosotros', href: '/about-us' },
   ];
@@ -79,11 +80,11 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="w-full h-[10vh] px-8">
+      <nav className="w-full h-[11vh] px-8 mb-6 md:mb-12">
         <div className="max-w-7xl mx-auto flex items-center justify-between py-5">
           {/* Logo */}
           <div className="flex items-center gap-4">
-            <img src="/assets/LogoAmplify.svg" alt="Amplify" width={150} height={120} />
+            <img src="/assets/LogoAmplify.svg" alt="Amplify" width={120} height={80} className='mr-5 h-20 w-20 md:h-[100px] md:w-[120px]'/>
 
           {/* Desktop Navigation Links - Hidden on mobile */}
           <div className="hidden lg:flex items-center space-x-4">

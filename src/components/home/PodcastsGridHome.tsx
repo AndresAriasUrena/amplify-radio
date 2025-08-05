@@ -62,7 +62,7 @@ export default function PodcastsGridHome() {
       const dateB = new Date(b.lastBuildDate || '');
       return dateB.getTime() - dateA.getTime();
     })
-    .slice(0, 3);
+    .slice(0, 4);
 
   return (
     <section className="w-full max-w-7xl mx-auto px-8">

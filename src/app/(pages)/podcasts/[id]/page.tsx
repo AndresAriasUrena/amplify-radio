@@ -257,13 +257,13 @@ export default function PodcastDetailPage() {
                       <IoPlay className='w-6 h-6 text-[#E5754C] bg-[#FFFFFF] rounded-full p-1 group-hover:text-[#FFFFFF] group-hover:bg-[#E5754C] transition-all duration-300' />
                     </button>
                   </div>
-                  <div className="flex-shrink-0 order-1 lg:order-2 border-[#B4B4B4] rounded-2xl shadow-md shadow-black" style={{boxShadow: '2px 10px 10px 2px rgba(0, 0, 0, 0.9)'}}>
+                  <div className="flex-shrink-0 order-1 lg:order-2 border-[#B4B4B4]">
                     <Image
                       src={podcast.imageUrl || '/placeholder-podcast.jpg'}
                       alt={cleanHtml(podcast.title)}
                       width={100}
                       height={100}
-                      className="rounded-2xl object-cover w-full lg:w-40"
+                      className="rounded-2xl object-cover w-full lg:w-40 shadow-md shadow-black" style={{boxShadow: '2px 10px 10px 2px rgba(0, 0, 0, 0.9)'}}
                     />
                   </div>
                 </div>
@@ -330,10 +330,6 @@ export default function PodcastDetailPage() {
                                 <IoCalendar className="w-4 h-4" />
                                 {formatDate(episode.pubDate)}
                               </span>
-                              <span className="flex items-center gap-1">
-                                <IoTime className="w-4 h-4" />
-                                {formatTime(episode.duration)}
-                              </span>
                             </div>
                           </div>
                         </div>
@@ -392,9 +388,15 @@ export default function PodcastDetailPage() {
                         </a>
                       </div>
                       <div className='flex flex-col gap-1'>
-                        <h3 className='font-lexend font-medium text-lg text-[#C7C7C7]'>
-                          {podcast.authors[currentAuthorIndex]?.name || 'Amplifier'}
-                        </h3>
+                        {podcast.authors[currentAuthorIndex]?.status === 'actual' ? (
+                          <Link href={`/amplifiers?author=${encodeURIComponent(podcast.authors[currentAuthorIndex]?.name || '')}`} className='font-lexend font-medium text-lg text-[#C7C7C7] hover:text-[#e4754c] transition-colors cursor-pointer'>
+                            {podcast.authors[currentAuthorIndex]?.name || 'Amplifier'}
+                          </Link>
+                        ) : (
+                          <h3 className='font-lexend font-medium text-lg text-[#C7C7C7]'>
+                            {podcast.authors[currentAuthorIndex]?.name || 'Amplifier'}
+                          </h3>
+                        )}
                         <p className='text-sm text-[#C7C7C7]/60 leading-tight'>
                           {podcast.authors[currentAuthorIndex]?.description || 'Descripción del amplifier'}
                         </p>
