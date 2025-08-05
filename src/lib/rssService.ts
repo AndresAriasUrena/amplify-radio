@@ -176,9 +176,39 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   ],
   
   // NUEVOS PODCASTS ACTUALES - SIN AUTORES AÚN
-  'https://feeds.captivate.fm/conexion-220/': [],
-  'https://feeds.captivate.fm/frecuencia-1111/': [],
-  'https://feeds.captivate.fm/verso-per-verso/': [],
+  'https://feeds.captivate.fm/conexion-220/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'actual',
+      podcastName: 'Conexion 220',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/frecuencia-1111/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'actual',
+      podcastName: 'Frecuencia 11:11',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/verso-per-verso/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'actual',
+      podcastName: 'Verso por Verso',
+      podcastId: ''
+    },
+  ],
   
   // HISTORIALES CON AUTORES CONOCIDOS
   'https://feeds.captivate.fm/que-intensas/': [
@@ -247,14 +277,94 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   ],
   
   // NUEVOS PODCASTS HISTORIALES - SIN AUTORES AÚN
-  'https://feeds.captivate.fm/canalizando-amor/': [],
-  'https://feeds.captivate.fm/el-gallinero/': [],
-  'https://feeds.captivate.fm/galeria-nocturna/': [],
-  'https://feeds.captivate.fm/los-incorregibles/': [],
-  'https://feeds.captivate.fm/pelos-en-la-ropa/': [],
-  'https://feeds.captivate.fm/pon-tu-mente-al-sol/': [],
-  'https://feeds.captivate.fm/que-buen-lugar/': [],
-  'https://feeds.captivate.fm/caravana-radio/': [],
+  'https://feeds.captivate.fm/canalizando-amor/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'historial',
+      podcastName: '',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/el-gallinero/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'historial',
+      podcastName: '',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/galeria-nocturna/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'historial',
+      podcastName: '',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/los-incorregibles/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'historial',
+      podcastName: '',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/pelos-en-la-ropa/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'historial',
+      podcastName: '',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/pon-tu-mente-al-sol/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'historial',
+      podcastName: '',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/que-buen-lugar/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'historial',
+      podcastName: '',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/caravana-radio/': [
+    {
+      name: 'John Doe',
+      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'historial',
+      podcastName: '',
+      podcastId: ''
+    },
+  ],
 };
 
 class RSSService {

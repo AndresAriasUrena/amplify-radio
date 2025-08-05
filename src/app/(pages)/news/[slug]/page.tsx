@@ -105,7 +105,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
             <div className="min-h-screen font-jost">
                 <Navbar />
                 <div className="px-4 sm:px-8">
-                    <div className="max-w-7xl mx-auto relative mt-4">
+                    <div className="max-w-7xl mx-auto relative">
                         <Breadcrumbs items={breadcrumbItems} />
                         <div className="flex flex-col lg:flex-row gap-4 lg:gap-16">
                             <aside className="order-1 lg:order-2 w-full lg:w-72 flex flex-col gap-8">
@@ -119,7 +119,7 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
                                         {mainCategory.name}
                                     </span>
                                 )}
-                                <h1 className="font-lexend text-3xl font-semibold text-[#C7C7C7] mb-2">
+                                <h1 className="font-lexend text-sm md:text-lg lg:text-3xl font-semibold text-[#C7C7C7] mb-2">
                                     {cleanTitle}
                                 </h1>
                                 <div className="mb-6 text-[#FFFFFF]/60 text-sm">

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 
 const schedule = [
@@ -72,15 +73,7 @@ const schedule = [
       { time: '11 :00 AM – 11 :30 AM', show: 'Frecuencia 11:11', url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vznjly3vlbmnpys0xmtexlw' },
       { time: '2 :00 PM – 3 :00 PM',   show: 'Verso Per Verso',  url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vdmvyc28tcgvylxzlcnnvlw' },
     ],
-  },
-
-  // ——————————————————— DOMINGO ———————————————————
-  {
-    day: 'DOMINGO',
-    today: false,
-    subtitle: 'Sin programación en la imagen',
-    blocks: [],
-  },
+  }
 ];
 
 export default function ScheduleGrid() {
@@ -90,18 +83,18 @@ export default function ScheduleGrid() {
         <h2 className="font-lexend font-semibold text-xl mb-2 uppercase">HORARIO</h2>
         <div className="h-0.5 w-full bg-[#E5754C] my-4" />
 
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
           {schedule.map((day) => (
             <div key={day.day} className="group">
               {/* Encabezado del día */}
               <div
-                className={`rounded-xl px-3 py-3 mb-4 transition-all duration-300 ${
+                className={`rounded-xl px-3 py-3 mb-2 transition-all duration-300 ${
                   day.today
                     ? 'bg-[#E5754C] text-white'
-                    : 'bg-[#2B2B2B] text-[#E3E3E3] group-hover:bg-[#E5754C] group-hover:text-white'
+                    : 'bg-[#2B2B2B] text-[#E3E3E3] group-hover:text-white'
                 }`}
               >
-                <div className="font-lexend font-semibold text-md uppercase">
+                <div className="font-lexend font-semibold text-sm uppercase">
                   {day.day}
                 </div>
                 <div className="text-sm text-[#B4B4B4] group-hover:text-white">
@@ -113,23 +106,20 @@ export default function ScheduleGrid() {
               <div
                 className={`rounded-xl px-3 py-4 min-h-[220px] flex flex-col gap-4 transition-all duration-300 ${
                   day.today
-                    ? 'bg-[#E5754C] text-white'
-                    : 'bg-[#2B2B2B] text-[#E3E3E3] group-hover:bg-[#E5754C] group-hover:text-white'
+                    ? ''
+                    : 'bg-[#2B2B2B] text-[#E3E3E3] group-hover:text-white'
                 }`}
               >
                 {day.blocks.length ? (
                   day.blocks.map((block, i) => (
-                    <div key={i}>
-                      <div className="font-lexend font-semibold text-xs uppercase">
+                    <Link href={block.url} key={i} className="hover:text-[#E5754C] transition-all duration-300">
+                      <div className="font-medium text-[0.70rem] lowercase">
                         {block.time}
                       </div>
-                      <a
-                        href={block.url}
-                        className="text-sm md:text-base underline group-hover:text-white transition-all duration-300"
-                      >
+                      <div className="text-xs">
                         {block.show}
-                      </a>
-                    </div>
+                      </div>
+                    </Link>
                   ))
                 ) : (
                   <span className="text-sm text-[#B4B4B4]">— Sin programas —</span>

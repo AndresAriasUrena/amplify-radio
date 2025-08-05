@@ -25,7 +25,7 @@ function PodcastsContent() {
 
   return (
     <div className="px-4 sm:px-8">
-      <div className="max-w-7xl mx-auto relative mt-4">
+      <div className="max-w-7xl mx-auto relative">
         <div className="flex">
           <Suspense>
             <PodcastGrid onOpenFilters={() => {}} />

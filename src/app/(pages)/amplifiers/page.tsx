@@ -110,7 +110,7 @@ export default function Amplifiers() {
             `}</style>
             <div className="min-h-screen font-jost">
                 <Navbar />
-                <div className="p-4 sm:p-8 bg-[#121212] mx-2 mt-6 rounded-2xl">
+                <div className="p-4 sm:p-8 bg-[#121212] mx-2 rounded-2xl">
                     <div className="max-w-7xl mx-auto relative">
                         <div className="flex flex-col lg:flex-row gap-4 lg:gap-16 w-full">
                             <div className="flex-1 items-center justify-center text-center">
