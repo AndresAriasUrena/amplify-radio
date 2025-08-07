@@ -8,7 +8,8 @@ import { IoReload } from 'react-icons/io5';
 import PodcastCard from '@/components/UI/PodcastCard';
 
 export default function PodcastsGridHome() {
-  const [podcasts, setPodcasts] = useState<PodcastShow[]>([]);
+  const [currentPodcasts, setCurrentPodcasts] = useState<PodcastShow[]>([]);
+  const [historicalPodcasts, setHistoricalPodcasts] = useState<PodcastShow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,8 +18,14 @@ export default function PodcastsGridHome() {
       setLoading(true);
       setError(null);
 
-      const shows = await RSSService.getAllPodcasts();
-      setPodcasts(shows);
+      // Cargar ambos tipos en paralelo para mejor rendimiento
+      const [currentShows, historicalShows] = await Promise.all([
+        RSSService.getCurrentPodcasts(),
+        RSSService.getHistoricalPodcasts()
+      ]);
+      
+      setCurrentPodcasts(currentShows);
+      setHistoricalPodcasts(historicalShows);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido al cargar podcasts');
     } finally {
@@ -39,7 +46,7 @@ export default function PodcastsGridHome() {
     return (
       <section className="w-full max-w-7xl mx-auto px-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-lexend font-semibold text-xl">ÚLTIMOS PODCASTS</h2>
+          <h2 className="font-lexend font-semibold text-xl">PODCASTS</h2>
         </div>
         <div className="h-0.5 w-full bg-[#E5754C] mb-6" />
         <div className="text-center py-8">
@@ -56,7 +63,17 @@ export default function PodcastsGridHome() {
     );
   }
 
-  const recentPodcasts = podcasts
+  // Ordenar podcasts actuales por fecha de último episodio
+  const recentCurrentPodcasts = currentPodcasts
+    .sort((a, b) => {
+      const dateA = new Date(a.lastBuildDate || '');
+      const dateB = new Date(b.lastBuildDate || '');
+      return dateB.getTime() - dateA.getTime();
+    })
+    .slice(0, 4);
+
+  // Ordenar podcasts históricos por fecha de último episodio
+  const recentHistoricalPodcasts = historicalPodcasts
     .sort((a, b) => {
       const dateA = new Date(a.lastBuildDate || '');
       const dateB = new Date(b.lastBuildDate || '');
@@ -65,42 +82,84 @@ export default function PodcastsGridHome() {
     .slice(0, 4);
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-8">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-lexend font-semibold text-xl">ÚLTIMOS PODCASTS</h2>
-        <Link href="/podcasts" className="text-[#9A9898] hover:text-[#E5754C] text-sm flex items-center gap-1">
-          Ver todos <span aria-hidden>→</span>
-        </Link>
+    <section className="w-full max-w-7xl mx-auto px-8 space-y-12">
+      {/* Sección de Podcasts Actuales */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-lexend font-semibold text-xl">PODCASTS ACTUALES</h2>
+          <Link href="/podcasts" className="text-[#9A9898] hover:text-[#E5754C] text-sm flex items-center gap-1">
+            Ver todos <span aria-hidden>→</span>
+          </Link>
+        </div>
+        <div className="h-0.5 w-full bg-[#E5754C] mb-6" />
+        
+        {loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="bg-[#232323] aspect-[16/11] rounded-2xl mb-4"></div>
+                <div className="h-4 bg-[#232323] rounded mb-2"></div>
+                <div className="h-4 bg-[#232323] rounded w-2/3"></div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!loading && recentCurrentPodcasts.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {recentCurrentPodcasts.map((podcast) => (
+              <PodcastCard key={podcast.id} podcast={podcast} />
+            ))}
+          </div>
+        )}
+
+        {!loading && recentCurrentPodcasts.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-[#C7C7C7] text-lg">
+              No se encontraron podcasts actuales
+            </p>
+          </div>
+        )}
       </div>
-      <div className="h-0.5 w-full bg-[#E5754C] mb-6" />
-      
-      {loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="animate-pulse">
-              <div className="bg-[#232323] aspect-[16/11] rounded-2xl mb-4"></div>
-              <div className="h-4 bg-[#232323] rounded mb-2"></div>
-              <div className="h-4 bg-[#232323] rounded w-2/3"></div>
-            </div>
-          ))}
-        </div>
-      )}
 
-      {!loading && recentPodcasts.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {recentPodcasts.map((podcast) => (
-            <PodcastCard key={podcast.id} podcast={podcast} />
-          ))}
+      {/* Sección de Podcasts Históricos */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-lexend font-semibold text-xl">HISTORIAL DE PODCASTS</h2>
+          <Link href="/podcasts" className="text-[#9A9898] hover:text-[#E5754C] text-sm flex items-center gap-1">
+            Ver todos <span aria-hidden>→</span>
+          </Link>
         </div>
-      )}
+        <div className="h-0.5 w-full bg-[#E5754C] mb-6" />
+        
+        {loading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={`hist-${index}`} className="animate-pulse">
+                <div className="bg-[#232323] aspect-[16/11] rounded-2xl mb-4"></div>
+                <div className="h-4 bg-[#232323] rounded mb-2"></div>
+                <div className="h-4 bg-[#232323] rounded w-2/3"></div>
+              </div>
+            ))}
+          </div>
+        )}
 
-      {!loading && recentPodcasts.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-[#C7C7C7] text-lg">
-            No se encontraron podcasts
-          </p>
-        </div>
-      )}
+        {!loading && recentHistoricalPodcasts.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {recentHistoricalPodcasts.map((podcast) => (
+              <PodcastCard key={podcast.id} podcast={podcast} />
+            ))}
+          </div>
+        )}
+
+        {!loading && recentHistoricalPodcasts.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-[#C7C7C7] text-lg">
+              No se encontraron podcasts en el historial
+            </p>
+          </div>
+        )}
+      </div>
     </section>
   );
 } 

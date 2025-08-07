@@ -372,6 +372,9 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
 class RSSService {
   private static instance: RSSService;
   private cache: Map<string, { data: RSSFeedData; timestamp: number }> = new Map();
+  private requestQueue: Map<string, Promise<RSSFeedData>> = new Map();
+  private lastRequestTime: number = 0;
+  private readonly MIN_REQUEST_INTERVAL = RSS_CONFIG.MIN_REQUEST_INTERVAL;
   private readonly CACHE_DURATION = RSS_CONFIG.CACHE_DURATION;
 
   static getInstance(): RSSService {
@@ -483,99 +486,154 @@ class RSSService {
   }
 
   private async fetchRSSFeed(url: string): Promise<RSSFeedData> {
+    // Verificar si ya hay una petición en curso para esta URL
+    const existingRequest = this.requestQueue.get(url);
+    if (existingRequest) {
+      console.log(`⏳ Esperando petición existente para: ${url}`);
+      return existingRequest;
+    }
+
+    // Verificar caché
     const cached = this.cache.get(url);
-    if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
+    if (cached && Date.now() - cached.timestamp < RSS_CONFIG.CACHE_DURATION) {
+      console.log(`📦 Devolviendo desde caché: ${url}`);
       return cached.data;
     }
 
-    return retryOperation(async () => {
+    // Rate limiting - esperar si es necesario
+    const now = Date.now();
+    const timeSinceLastRequest = now - this.lastRequestTime;
+    if (timeSinceLastRequest < this.MIN_REQUEST_INTERVAL) {
+      const waitTime = this.MIN_REQUEST_INTERVAL - timeSinceLastRequest;
+      console.log(`⏱️ Rate limiting: esperando ${waitTime}ms`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+    this.lastRequestTime = Date.now();
+
+    // Crear nueva petición
+    const requestPromise = retryOperation(async () => {
       const apiUrl = `/api/rss?url=${encodeURIComponent(url)}`;
+      console.log(`🔄 Fetching RSS from API: ${apiUrl}`);
       
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), RSS_CONFIG.REQUEST_TIMEOUT);
-      
-      const response = await fetch(apiUrl, { 
-        signal: controller.signal,
+      const response = await fetch(apiUrl, {
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        next: { revalidate: 300 } // Revalidar cada 5 minutos
       });
-      clearTimeout(timeoutId);
-      
+
       if (!response.ok) {
         throw new Error(`Error HTTP: ${response.status}`);
       }
 
       const data = await response.json();
-      
       if (data.error) {
         throw new Error(data.error);
       }
-      
+
+      // Parsear el XML
       const rssData = await this.parseRSSXML(data.content);
+      
+      // Guardar en caché
       this.cache.set(url, { data: rssData, timestamp: Date.now() });
+      
       return rssData;
-    });
+    }, RSS_CONFIG.MAX_RETRIES, RSS_CONFIG.RETRY_DELAY);
+
+    // Guardar la promesa en la cola
+    this.requestQueue.set(url, requestPromise);
+
+    try {
+      const result = await requestPromise;
+      return result;
+    } finally {
+      // Limpiar la cola
+      this.requestQueue.delete(url);
+    }
+  }
+
+  async getCurrentPodcasts(): Promise<PodcastShow[]> {
+    const allPodcasts = await this.getAllPodcasts();
+    return allPodcasts.filter(podcast => podcast.status === 'actual');
+  }
+
+  async getHistoricalPodcasts(): Promise<PodcastShow[]> {
+    const allPodcasts = await this.getAllPodcasts();
+    return allPodcasts.filter(podcast => podcast.status === 'historial');
   }
 
   async getAllPodcasts(): Promise<PodcastShow[]> {
     const shows: PodcastShow[] = [];
     
-    // Procesar todos los feeds en paralelo para mejor rendimiento
-    const promises = PODCAST_RSS_FEEDS.map(async (rssUrl) => {
-      try {
-        const feedData = await this.fetchRSSFeed(rssUrl.url);
-        const show: PodcastShow = {
-          id: this.generateIdFromUrl(rssUrl.url),
-          title: feedData.title,
-          description: feedData.description,
-          imageUrl: feedData.image,
-          link: feedData.link,
-          rssUrl: rssUrl.url,
-          language: feedData.language,
-          author: feedData.author,
-          category: feedData.category,
-          lastBuildDate: feedData.lastBuildDate,
-          authors: PODCAST_AUTHORS[rssUrl.url] || [],
-          status: rssUrl.status
-        };
-        return show;
-      } catch (error) {
-        console.error(`Error al procesar podcast ${rssUrl.url}:`, error);
-        
-        // Crear un podcast de respaldo con información básica si falla
-        const fallbackShow: PodcastShow = {
-          id: this.generateIdFromUrl(rssUrl.url),
-          title: PODCAST_AUTHORS[rssUrl.url]?.[0]?.podcastName || 'Podcast',
-          description: 'Información temporalmente no disponible',
-          imageUrl: PODCAST_AUTHORS[rssUrl.url]?.[0]?.imageUrl || '/assets/autores/EmmaTristan.jpeg',
-          link: rssUrl.url,
-          rssUrl: rssUrl.url,
-          language: 'es',
-          author: undefined,
-          category: undefined,
-          lastBuildDate: undefined,
-          authors: PODCAST_AUTHORS[rssUrl.url] || [],
-          status: rssUrl.status
-        };
-        
-        return fallbackShow;
-      }
-    });
+    // Procesar feeds en lotes para evitar sobrecarga
+    const BATCH_SIZE = RSS_CONFIG.BATCH_SIZE;
     
-    // Esperar a que todos terminen y filtrar los que fallaron completamente
-    const results = await Promise.allSettled(promises);
-    results.forEach(result => {
-      if (result.status === 'fulfilled' && result.value) {
-        shows.push(result.value);
+    for (let i = 0; i < PODCAST_RSS_FEEDS.length; i += BATCH_SIZE) {
+      const batch = PODCAST_RSS_FEEDS.slice(i, i + BATCH_SIZE);
+      
+      // Procesar lote actual
+      const batchPromises = batch.map(async (rssUrl) => {
+        try {
+          const feedData = await this.fetchRSSFeed(rssUrl.url);
+          const show: PodcastShow = {
+            id: this.generateIdFromUrl(rssUrl.url),
+            title: feedData.title,
+            description: feedData.description,
+            imageUrl: feedData.image,
+            link: feedData.link,
+            rssUrl: rssUrl.url,
+            language: feedData.language,
+            author: feedData.author,
+            category: feedData.category,
+            lastBuildDate: feedData.lastBuildDate,
+            authors: PODCAST_AUTHORS[rssUrl.url] || [],
+            status: rssUrl.status
+          };
+          return show;
+        } catch (error) {
+          console.error(`Error al procesar podcast ${rssUrl.url}:`, error);
+          
+          // Crear un podcast de respaldo con información básica si falla
+          const fallbackShow: PodcastShow = {
+            id: this.generateIdFromUrl(rssUrl.url),
+            title: PODCAST_AUTHORS[rssUrl.url]?.[0]?.podcastName || 'Podcast',
+            description: 'Información temporalmente no disponible',
+            imageUrl: PODCAST_AUTHORS[rssUrl.url]?.[0]?.imageUrl || '/assets/autores/EmmaTristan.jpeg',
+            link: rssUrl.url,
+            rssUrl: rssUrl.url,
+            language: 'es',
+            author: undefined,
+            category: undefined,
+            lastBuildDate: undefined,
+            authors: PODCAST_AUTHORS[rssUrl.url] || [],
+            status: rssUrl.status
+          };
+          
+          return fallbackShow;
+        }
+      });
+      
+      // Esperar a que termine el lote actual
+      const results = await Promise.allSettled(batchPromises);
+      results.forEach(result => {
+        if (result.status === 'fulfilled' && result.value) {
+          shows.push(result.value);
+        }
+      });
+      
+      // Esperar entre lotes para evitar rate limiting
+      if (i + BATCH_SIZE < PODCAST_RSS_FEEDS.length) {
+        console.log(`⏳ Esperando antes del siguiente lote...`);
+        await new Promise(resolve => setTimeout(resolve, RSS_CONFIG.BATCH_DELAY));
       }
-    });
+    }
     
     // Si no se pudo obtener ningún podcast, lanzar un error
     if (shows.length === 0) {
       throw new Error('No se pudo cargar ningún podcast. Verifica tu conexión a internet.');
     }
     
+    console.log(`✅ Total de podcasts cargados: ${shows.length}`);
     return shows;
   }
 
