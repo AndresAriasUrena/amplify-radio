@@ -20,9 +20,9 @@ const schedule = [
     subtitle: 'Horario de esta semana',
     blocks: [
       { time: '8 :00 AM – 9 :00 AM',  show: 'Ciudad Caníbal',   url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vy2l1zgfklwnhbmliywwv' },
-      { time: '11 :00 AM – 11 :30 AM', show: 'Pulso Empresarial', url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vchlsc28tzw1wcmvzyxjpywwv' },
+      { time: '11 :00 AM – 11 :30 AM', show: 'Pulso Empresarial', url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vchvsc28tzw1wcmvzyxjpywwxlw' },
       { time: '4 :00 PM – 4 :30 PM',  show: 'Conexión 220',     url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vy29uzxhpb24tmjiwlw' },
-      { time: '6 :00 PM – 6 :30 PM',  show: 'Registros',        url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vcmvnaxn0cm9zlw' },
+      { time: '6 :00 PM – 6 :30 PM',  show: 'Registros',        url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vcmvnaxn0cm9zxw' },
       { time: '8 :00 PM – 8 :30 PM',  show: 'Dada',             url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vzgfkys8' },
     ],
   },
@@ -35,7 +35,7 @@ const schedule = [
     blocks: [
       { time: '9 :30 AM – 10 :00 AM', show: 'Doble Click',        url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vzg9ibguty2xpy2sv' },
       { time: '3 :00 PM – 3 :30 PM',  show: 'Wax Wednesdays',     url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vd2f4lw' },
-      { time: '7 :00 PM – 8 :00 PM',  show: 'Dance To This Radio', url: '/podcasts/rgfuy2ugdg8gdghpcybsywrpbw' },
+      { time: '7 :00 PM – 8 :00 PM',  show: 'Dance To This Radio', url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vzgfuy2utdg8tdghpcy1yywrpby0v' },
     ],
   },
 
@@ -46,9 +46,9 @@ const schedule = [
     subtitle: 'Horario de esta semana',
     blocks: [
       { time: '8 :00 AM – 9 :00 AM',  show: 'Ciudad Caníbal',    url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vy2l1zgfklwnhbmliywwv' },
-      { time: '11 :00 AM – 11 :30 AM', show: 'Pulso Empresarial', url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vchlsc28tzw1wcmvzyxjpywwv' },
+      { time: '11 :00 AM – 11 :30 AM', show: 'Pulso Empresarial', url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vchvsc28tzw1wcmvzyxjpywwxlw' },
       { time: '7 :00 PM – 8 :00 PM',  show: 'Lit By Lit',        url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vbgl0lwj5lwxpdc8' },
-      { time: '10 :00 PM – 10 :30 PM',show: 'Flamingo de Noche', url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vzgxhbwluz28tzgutbm9jaguv' },
+      { time: '10 :00 PM – 10 :30 PM',show: 'Flamingo de Noche', url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vzmxhbwluz28tzgutbm9jaguxlw' },
     ],
   },
 
@@ -60,7 +60,7 @@ const schedule = [
     blocks: [
       { time: '8 :00 AM – 9 :00 AM',  show: 'Ciudad Caníbal', url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vy2l1zgfklwnhbmliywwv' },
       { time: '5 :00 PM – 5 :3O PM',  show: "Let's en Repeat", url: '/podcasts/bgv0c2vulgvulgvwzwf0' },
-      { time: '9 :00 PM – 10 :00 PM', show: 'Cross Fade',      url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vy3jvc3mtzgfkzs8' },
+      { time: '9 :00 PM – 10 :00 PM', show: 'Cross Fade',      url: '/podcasts/ahr0chm6ly9mzwvkcy5jyxb0axzhdguuzm0vy3jvc3mtzmfkzs0v' },
     ],
   },
 
