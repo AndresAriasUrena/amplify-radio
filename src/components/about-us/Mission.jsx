@@ -23,7 +23,7 @@ const Mission = () => {
         {/* Columna derecha: imagen */}
         <div className="w-full lg:w-1/2 flex items-center justify-center">
           <img
-            src="/assets/about-us/Mission.avif"
+            src="/assets/about-us/about1.avif"
             alt="Banda tocando en vivo"
             className="rounded-xl w-full h-[280px] sm:h-[340px] lg:h-[440px] object-cover shadow-lg"
           />

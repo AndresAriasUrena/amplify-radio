@@ -14,6 +14,7 @@ interface PodcastGridProps {
 export default function PodcastGrid({ onOpenFilters }: PodcastGridProps) {
   const [podcasts, setPodcasts] = useState<PodcastShow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingHistorical, setLoadingHistorical] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [allPodcasts, setAllPodcasts] = useState<PodcastShow[]>([]);
   const router = useRouter();
@@ -24,19 +25,47 @@ export default function PodcastGrid({ onOpenFilters }: PodcastGridProps) {
       setLoading(true);
       setError(null);
 
-      const shows = await RSSService.getAllPodcasts();
-      setAllPodcasts(shows);
-      setPodcasts(shows);
+      // Usar carga progresiva
+      await RSSService.getAllPodcastsProgressive((partialShows, isComplete) => {
+        setAllPodcasts(partialShows);
+        setPodcasts(partialShows);
+        
+        if (isComplete) {
+          setLoading(false);
+          setLoadingHistorical(false);
+        } else {
+          // Los podcasts actuales se han cargado, ahora cargando historiales
+          setLoading(false);
+          setLoadingHistorical(true);
+        }
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido al cargar podcasts');
-    } finally {
       setLoading(false);
+      setLoadingHistorical(false);
     }
   }, []);
 
   useEffect(() => {
     fetchPodcasts();
   }, [fetchPodcasts]);
+
+  // Precargar las primeras imágenes para mejorar rendimiento
+  useEffect(() => {
+    const priorityImages = [
+      '/assets/podcast/la-telaraña.avif',
+      '/assets/podcast/doble-click.avif',
+      '/assets/podcast/ciudad-canibal.avif'
+    ];
+    
+    priorityImages.forEach(src => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = src;
+      document.head.appendChild(link);
+    });
+  }, []);
 
   const handleRetry = () => {
     setError(null);
@@ -76,7 +105,9 @@ export default function PodcastGrid({ onOpenFilters }: PodcastGridProps) {
           
           <p className="text-[#C7C7C7]/50 mt-1">
             {loading && podcasts.length === 0 
-              ? 'Cargando podcasts...' 
+              ? 'Cargando podcasts actuales...' 
+              : loadingHistorical
+              ? `${podcasts.length} podcast${podcasts.length !== 1 ? 's' : ''} disponible${podcasts.length !== 1 ? 's' : ''} (cargando historiales...)`
               : `${podcasts.length} podcast${podcasts.length !== 1 ? 's' : ''} disponible${podcasts.length !== 1 ? 's' : ''}`}
           </p>
         </div>
@@ -96,8 +127,12 @@ export default function PodcastGrid({ onOpenFilters }: PodcastGridProps) {
 
       {podcasts.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {podcasts.map((podcast) => (
-            <PodcastCard key={podcast.id} podcast={podcast} />
+          {podcasts.map((podcast, index) => (
+            <PodcastCard 
+              key={podcast.id} 
+              podcast={podcast} 
+              priority={index < 3}
+            />
           ))}
         </div>
       )}

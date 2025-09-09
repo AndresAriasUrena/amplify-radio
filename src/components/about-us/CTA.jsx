@@ -6,7 +6,7 @@ const CTA = () => {
     <section className="flex flex-col items-center justify-start bg-[#121212] px-8 py-16 mx-2 rounded-2xl">
       <div className="w-full max-w-7xl mx-auto">
         <img
-          src="/assets/about-us/Hero.avif"
+          src="/assets/about-us/cta.avif"
           alt="Mano usando laptop"
           className="rounded-xl w-full object-cover h-full"
         />

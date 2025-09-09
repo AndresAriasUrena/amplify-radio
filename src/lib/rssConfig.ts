@@ -1,16 +1,16 @@
 // Configuración para el RSS Service
 export const RSS_CONFIG = {
-  // Timeout para peticiones (en milisegundos)
-  REQUEST_TIMEOUT: 15000,
+  // Timeout para peticiones (en milisegundos) - Más agresivo para mayor velocidad
+  REQUEST_TIMEOUT: 5000,
   
   // Duración del cache (en milisegundos) - 30 minutos
   CACHE_DURATION: 30 * 60 * 1000,
   
-  // Número máximo de reintentos por feed
-  MAX_RETRIES: 3,
+  // Número máximo de reintentos por feed - Mínimo para mayor velocidad
+  MAX_RETRIES: 1,
   
-  // Delay entre reintentos (en milisegundos)
-  RETRY_DELAY: 1000,
+  // Delay entre reintentos (en milisegundos) - Más rápido
+  RETRY_DELAY: 200,
   
   // Servicios proxy disponibles (en orden de preferencia)
   PROXY_SERVICES: [

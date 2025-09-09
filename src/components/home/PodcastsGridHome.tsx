@@ -17,11 +17,17 @@ export default function PodcastsGridHome() {
       setLoading(true);
       setError(null);
 
-      const shows = await RSSService.getAllPodcasts();
-      setPodcasts(shows);
+      // Usar carga progresiva - en home solo nos interesan los primeros resultados
+      await RSSService.getAllPodcastsProgressive((partialShows) => {
+        setPodcasts(partialShows);
+        
+        // Para el home, mostramos resultados tan pronto como tengamos podcasts actuales
+        if (partialShows.length > 0) {
+          setLoading(false);
+        }
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido al cargar podcasts');
-    } finally {
       setLoading(false);
     }
   }, []);

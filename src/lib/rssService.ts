@@ -35,6 +35,44 @@ const PODCAST_RSS_FEEDS = [
   { url: 'https://feeds.captivate.fm/caravana-radio/', status: 'historial' as const },
 ];
 
+// Mapeo de URLs RSS a imágenes locales (ordenado por prioridad de carga)
+const PODCAST_LOCAL_IMAGES: { [rssUrl: string]: string } = {
+  // PRIORIDAD 1 - Podcasts más populares (cargan primero)
+  'https://feeds.captivate.fm/la-telarana/': '/assets/podcast/la-telaraña.avif',
+  'https://feeds.captivate.fm/doble-click/': '/assets/podcast/doble-click.avif',
+  'https://feeds.captivate.fm/ciudad-canibal/': '/assets/podcast/ciudad-canibal.avif',
+  
+  // PRIORIDAD 2 - Podcasts actuales populares
+  'https://feeds.captivate.fm/pulso-empresarial/': '/assets/podcast/pulso-empresarial.avif',
+  'https://feeds.captivate.fm/aleatorio/': '/assets/podcast/aleatorio.avif',
+  'https://feeds.captivate.fm/registros/': '/assets/podcast/registros.avif',
+  
+  // PRIORIDAD 3 - Resto de actuales
+  'https://feeds.captivate.fm/dada/': '/assets/podcast/dada.avif',
+  'https://feeds.captivate.fm/wax/': '/assets/podcast/wax.avif',
+  'https://feeds.captivate.fm/lit-by-lit/': '/assets/podcast/lit-by-bit.avif',
+  'https://feeds.captivate.fm/flamingo-de-noche/': '/assets/podcast/flamingo.avif',
+  'https://feeds.captivate.fm/cross-fade/': '/assets/podcast/crossfade.avif',
+  'https://feeds.captivate.fm/conexion-220/': '/assets/podcast/conexion220.avif',
+  'https://feeds.captivate.fm/verso-per-verso/': '/assets/podcast/versoperverso.avif',
+  // 'https://feeds.captivate.fm/frecuencia-1111/': '/assets/podcast/frecuencia1111.avif', // Missing file - will use fallback
+  
+  // HISTORIALES - Menor prioridad
+  'https://feeds.captivate.fm/que-intensas/': '/assets/podcast/que-intensas.avif',
+  'https://feeds.captivate.fm/alta-frecuencia/': '/assets/podcast/alta-frecuencia.avif',
+  'https://feeds.captivate.fm/movete-en-el-mundo/': '/assets/podcast/movete-en-el-mundo.avif',
+  'https://feeds.captivate.fm/canalizando-amor/': '/assets/podcast/canalizando.avif',
+  'https://feeds.captivate.fm/el-gallinero/': '/assets/podcast/el-gallinero.avif',
+  'https://feeds.captivate.fm/emprendedores-de-vida/': '/assets/podcast/emprendedores.avif',
+  'https://feeds.captivate.fm/galeria-nocturna/': '/assets/podcast/galeria-nocturna.avif',
+  'https://feeds.captivate.fm/pelos-en-la-ropa/': '/assets/podcast/pelos-en-la-ropa.avif',
+  'https://feeds.captivate.fm/pon-tu-mente-al-sol/': '/assets/podcast/mente-al-sol.avif',
+  'https://feeds.captivate.fm/que-buen-lugar/': '/assets/podcast/buen-lugar.avif',
+  'https://feeds.captivate.fm/caravana-radio/': '/assets/podcast/caravana-radio.avif',
+  // 'https://feeds.captivate.fm/los-incorregibles/': '/assets/podcast/incorregibles.avif', // Missing file - will use fallback
+  // 'https://feeds.captivate.fm/divina-suerte/': '/assets/podcast/divina-suerte.avif', // Missing file - will use fallback
+};
+
 const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   // ACTUALES CON AUTORES CONOCIDOS
   'https://feeds.captivate.fm/la-telarana/': [
@@ -521,59 +559,164 @@ class RSSService {
   async getAllPodcasts(): Promise<PodcastShow[]> {
     const shows: PodcastShow[] = [];
     
-    // Procesar todos los feeds en paralelo para mejor rendimiento
-    const promises = PODCAST_RSS_FEEDS.map(async (rssUrl) => {
-      try {
-        const feedData = await this.fetchRSSFeed(rssUrl.url);
-        const show: PodcastShow = {
-          id: this.generateIdFromUrl(rssUrl.url),
-          title: feedData.title,
-          description: feedData.description,
-          imageUrl: feedData.image,
-          link: feedData.link,
-          rssUrl: rssUrl.url,
-          language: feedData.language,
-          author: feedData.author,
-          category: feedData.category,
-          lastBuildDate: feedData.lastBuildDate,
-          authors: PODCAST_AUTHORS[rssUrl.url] || [],
-          status: rssUrl.status
-        };
-        return show;
-      } catch (error) {
-        console.error(`Error al procesar podcast ${rssUrl.url}:`, error);
-        
-        // Crear un podcast de respaldo con información básica si falla
-        const fallbackShow: PodcastShow = {
-          id: this.generateIdFromUrl(rssUrl.url),
-          title: PODCAST_AUTHORS[rssUrl.url]?.[0]?.podcastName || 'Podcast',
-          description: 'Información temporalmente no disponible',
-          imageUrl: PODCAST_AUTHORS[rssUrl.url]?.[0]?.imageUrl || '/assets/autores/EmmaTristan.jpeg',
-          link: rssUrl.url,
-          rssUrl: rssUrl.url,
-          language: 'es',
-          author: undefined,
-          category: undefined,
-          lastBuildDate: undefined,
-          authors: PODCAST_AUTHORS[rssUrl.url] || [],
-          status: rssUrl.status
-        };
-        
-        return fallbackShow;
-      }
-    });
+    // Separar podcasts actuales e historiales para carga progresiva
+    const actualFeeds = PODCAST_RSS_FEEDS.filter(feed => feed.status === 'actual');
+    const historialFeeds = PODCAST_RSS_FEEDS.filter(feed => feed.status === 'historial');
     
-    // Esperar a que todos terminen y filtrar los que fallaron completamente
-    const results = await Promise.allSettled(promises);
-    results.forEach(result => {
-      if (result.status === 'fulfilled' && result.value) {
-        shows.push(result.value);
-      }
-    });
+    // Cargar podcasts actuales primero con procesamiento en lotes
+    const actualShows = await this.processFeedsInBatches(actualFeeds);
+    shows.push(...actualShows);
+    
+    // Cargar podcasts historiales en segundo plano
+    const historialShows = await this.processFeedsInBatches(historialFeeds);
+    shows.push(...historialShows);
     
     // Si no se pudo obtener ningún podcast, lanzar un error
     if (shows.length === 0) {
       throw new Error('No se pudo cargar ningún podcast. Verifica tu conexión a internet.');
+    }
+    
+    return shows;
+  }
+
+  async getAllPodcastsProgressive(onPartialUpdate?: (shows: PodcastShow[], isComplete: boolean) => void): Promise<PodcastShow[]> {
+    const allShows: PodcastShow[] = [];
+    
+    // Separar podcasts actuales e historiales
+    const actualFeeds = PODCAST_RSS_FEEDS.filter(feed => feed.status === 'actual');
+    const historialFeeds = PODCAST_RSS_FEEDS.filter(feed => feed.status === 'historial');
+    
+    try {
+      // Cargar podcasts actuales primero con actualizations por lote
+      await this.processFeedsInBatches(actualFeeds, (batchShows, totalSoFar) => {
+        allShows.length = 0; // Limpiar array
+        allShows.push(...totalSoFar);
+        
+        // Notificar cada vez que se completa un lote de podcasts actuales
+        if (onPartialUpdate) {
+          onPartialUpdate([...allShows], false);
+        }
+      });
+      
+      // Marcar que los actuales terminaron, ahora empezar historiales
+      const actualComplete = allShows.length;
+      
+      // Cargar podcasts historiales en segundo plano con actualizations por lote
+      await this.processFeedsInBatches(historialFeeds, (batchShows, totalSoFar) => {
+        // Mantener los actuales y añadir los nuevos historiales
+        allShows.length = actualComplete;
+        allShows.push(...totalSoFar);
+        
+        // Notificar actualización con historiales
+        if (onPartialUpdate) {
+          onPartialUpdate([...allShows], false);
+        }
+      });
+      
+      // Notificar actualización final
+      if (onPartialUpdate) {
+        onPartialUpdate([...allShows], true);
+      }
+      
+    } catch (error) {
+      console.error('Error en carga progresiva:', error);
+      if (allShows.length === 0) {
+        throw new Error('No se pudo cargar ningún podcast. Verifica tu conexión a internet.');
+      }
+    }
+    
+    return allShows;
+  }
+
+  private async processFeedsInBatches(
+    feeds: { url: string; status: 'actual' | 'historial' }[],
+    onBatchComplete?: (batchShows: PodcastShow[], totalSoFar: PodcastShow[]) => void
+  ): Promise<PodcastShow[]> {
+    const BATCH_SIZE = 1; // Procesar 1 feed a la vez para máxima velocidad
+    const shows: PodcastShow[] = [];
+    
+    // Ordenar feeds por prioridad basada en el orden del mapeo de imágenes locales
+    const orderedImageUrls = Object.keys(PODCAST_LOCAL_IMAGES);
+    const sortedFeeds = feeds
+      .filter(feed => PODCAST_LOCAL_IMAGES[feed.url]) // Solo feeds con imagen local
+      .sort((a, b) => {
+        const indexA = orderedImageUrls.indexOf(a.url);
+        const indexB = orderedImageUrls.indexOf(b.url);
+        return indexA - indexB;
+      });
+    
+    // Dividir en lotes
+    for (let i = 0; i < sortedFeeds.length; i += BATCH_SIZE) {
+      const batch = sortedFeeds.slice(i, i + BATCH_SIZE);
+      
+      // Procesar lote actual en paralelo
+      const batchPromises = batch.map(async (rssUrl) => {
+        try {
+          // Solo procesar podcasts que tengan imagen local
+          if (!PODCAST_LOCAL_IMAGES[rssUrl.url]) {
+            return null; // Ocultar podcasts sin imagen local
+          }
+
+          const feedData = await this.fetchRSSFeed(rssUrl.url);
+          const show: PodcastShow = {
+            id: this.generateIdFromUrl(rssUrl.url),
+            title: feedData.title,
+            description: feedData.description,
+            imageUrl: PODCAST_LOCAL_IMAGES[rssUrl.url],
+            link: feedData.link,
+            rssUrl: rssUrl.url,
+            language: feedData.language,
+            author: feedData.author,
+            category: feedData.category,
+            lastBuildDate: feedData.lastBuildDate,
+            authors: PODCAST_AUTHORS[rssUrl.url] || [],
+            status: rssUrl.status
+          };
+          return show;
+        } catch (error) {
+          console.error(`Error al procesar podcast ${rssUrl.url}:`, error);
+          
+          // Solo crear fallback si tiene imagen local
+          if (!PODCAST_LOCAL_IMAGES[rssUrl.url]) {
+            return null; // Ocultar podcasts sin imagen local
+          }
+
+          const fallbackShow: PodcastShow = {
+            id: this.generateIdFromUrl(rssUrl.url),
+            title: PODCAST_AUTHORS[rssUrl.url]?.[0]?.podcastName || 'Podcast',
+            description: 'Información temporalmente no disponible',
+            imageUrl: PODCAST_LOCAL_IMAGES[rssUrl.url],
+            link: rssUrl.url,
+            rssUrl: rssUrl.url,
+            language: 'es',
+            author: undefined,
+            category: undefined,
+            lastBuildDate: undefined,
+            authors: PODCAST_AUTHORS[rssUrl.url] || [],
+            status: rssUrl.status
+          };
+          
+          return fallbackShow;
+        }
+      });
+      
+      // Esperar a que termine el lote actual
+      const batchResults = await Promise.allSettled(batchPromises);
+      const batchShows: PodcastShow[] = [];
+      
+      batchResults.forEach(result => {
+        if (result.status === 'fulfilled' && result.value !== null) {
+          batchShows.push(result.value);
+          shows.push(result.value);
+        }
+      });
+      
+      // Notificar que el lote se completó
+      if (onBatchComplete && batchShows.length > 0) {
+        onBatchComplete(batchShows, [...shows]);
+      }
+      
+      // Sin pausa entre requests individuales para máxima velocidad
     }
     
     return shows;
@@ -596,6 +739,52 @@ class RSSService {
     } catch (error) {
       console.error(`Error al obtener episodios para ${rssUrl}:`, error);
       // Retornar array vacío en lugar de lanzar error
+      return [];
+    }
+  }
+
+  // Función para carga progresiva de episodios (lote por lote)
+  async getPodcastEpisodesProgressive(
+    rssUrl: string, 
+    onEpisodesUpdate?: (episodes: PodcastEpisode[], isComplete: boolean) => void
+  ): Promise<PodcastEpisode[]> {
+    try {
+      const feedData = await this.fetchRSSFeed(rssUrl);
+      const showId = this.generateIdFromUrl(rssUrl);
+      const allEpisodes = feedData.episodes.map(episode => ({
+        id: episode.guid || this.generateIdFromTitle(episode.title),
+        title: episode.title,
+        description: episode.description,
+        audioUrl: episode.audioUrl,
+        duration: episode.duration,
+        pubDate: episode.pubDate,
+        guid: episode.guid,
+        showId
+      }));
+
+      // Cargar episodios en lotes para mostrar progresivamente
+      const BATCH_SIZE = 5;
+      const loadedEpisodes: PodcastEpisode[] = [];
+
+      for (let i = 0; i < allEpisodes.length; i += BATCH_SIZE) {
+        const batch = allEpisodes.slice(i, i + BATCH_SIZE);
+        loadedEpisodes.push(...batch);
+        
+        // Notificar progreso
+        if (onEpisodesUpdate) {
+          const isComplete = i + BATCH_SIZE >= allEpisodes.length;
+          onEpisodesUpdate([...loadedEpisodes], isComplete);
+        }
+
+        // Delay pequeño para permitir renderizado
+        if (i + BATCH_SIZE < allEpisodes.length) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+
+      return allEpisodes;
+    } catch (error) {
+      console.error(`Error al obtener episodios para ${rssUrl}:`, error);
       return [];
     }
   }
@@ -657,7 +846,7 @@ class RSSService {
 
   static updateAuthorConfig(podcastId: string, authors: Author[]): void {
     // Buscar la URL correspondiente al ID
-    const rssUrl = PODCAST_RSS_FEEDS.find(url => RSSService.getInstance().generateIdFromUrl(url.url) === podcastId);
+    const rssUrl = PODCAST_RSS_FEEDS.find(feed => RSSService.getInstance().generateIdFromUrl(feed.url) === podcastId);
     if (rssUrl) {
       PODCAST_AUTHORS[rssUrl.url] = authors;
     } else {

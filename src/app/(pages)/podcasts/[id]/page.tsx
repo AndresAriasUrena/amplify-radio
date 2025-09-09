@@ -19,6 +19,7 @@ export default function PodcastDetailPage() {
   const [podcast, setPodcast] = useState<PodcastShow | null>(null);
   const [episodes, setEpisodes] = useState<PodcastEpisode[]>([]);
   const [loading, setLoading] = useState(true);
+  const [episodesLoading, setEpisodesLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { playEpisode, playerState } = usePlayer();
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,8 +68,10 @@ export default function PodcastDetailPage() {
       
       try {
         setLoading(true);
+        setEpisodesLoading(true);
         setError(null);
 
+        // PASO 1: Cargar información básica del podcast primero
         const podcastData = await RSSService.getPodcastById(params.id as string);
         if (!podcastData) {
           setError('Podcast no encontrado');
@@ -76,16 +79,24 @@ export default function PodcastDetailPage() {
         }
 
         setPodcast(podcastData);
-
-        const episodesData = await RSSService.getPodcastEpisodes(podcastData.rssUrl);
-        setEpisodes(episodesData);
-
+        setLoading(false); // Mostrar info básica inmediatamente
         document.title = `${podcastData.title} | Amplify Radio`;
+        
+        // PASO 2: Cargar episodios progresivamente en segundo plano
+        await RSSService.getPodcastEpisodesProgressive(
+          podcastData.rssUrl,
+          (episodesData, isComplete) => {
+            setEpisodes(episodesData);
+            if (isComplete) {
+              setEpisodesLoading(false);
+            }
+          }
+        );
         
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error al cargar el podcast');
-      } finally {
         setLoading(false);
+        setEpisodesLoading(false);
       }
     };
 
@@ -263,7 +274,11 @@ export default function PodcastDetailPage() {
                       alt={cleanHtml(podcast.title)}
                       width={100}
                       height={100}
-                      className="rounded-2xl object-cover w-full lg:w-40 shadow-md shadow-black" style={{boxShadow: '2px 10px 10px 2px rgba(0, 0, 0, 0.9)'}}
+                      className="rounded-2xl object-cover w-full lg:w-40 shadow-md shadow-black" 
+                      style={{boxShadow: '2px 10px 10px 2px rgba(0, 0, 0, 0.9)'}}
+                      priority={true}
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                     />
                   </div>
                 </div>
@@ -279,27 +294,47 @@ export default function PodcastDetailPage() {
             <div className='w-full lg:w-[25%] lg:overflow-y-auto lg:max-h-[90vh] scrollbar-hide'>
               <div className=''>
                 <div className='flex flex-row items-center justify-between'>
-                  <h2 className="font-lexend font-semibold text-xl uppercase">CAPITULOS ({episodes.length})</h2>
-                  <div className='flex flex-row items-center gap-2'>
-                    <button
-                      className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                    >
-                      <IoArrowBack className='w-4 h-4' />
-                    </button>
-                    <button
-                      className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                    >
-                      <IoArrowForward className='w-4 h-4' />
-                    </button>
-                  </div>
+                  <h2 className="font-lexend font-semibold text-xl uppercase">
+                    CAPITULOS {episodesLoading ? '(cargando...)' : `(${episodes.length})`}
+                  </h2>
+                  {!episodesLoading && (
+                    <div className='flex flex-row items-center gap-2'>
+                      <button
+                        className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        <IoArrowBack className='w-4 h-4' />
+                      </button>
+                      <button
+                        className={`text-[#C7C7C7] hover:text-[#E5754C] transition-colors ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        <IoArrowForward className='w-4 h-4' />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className="h-0.5 w-full bg-[#E5754C] my-3" />
-                <div className="space-y-2">
-                  {paginatedEpisodes.map((episode, index) => {
+                
+                {episodesLoading ? (
+                  <div className="space-y-2">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="bg-[#1A1A1A] rounded-xl p-3 animate-pulse">
+                        <div className="space-y-2">
+                          <div className="h-5 bg-[#232323] rounded w-3/4"></div>
+                          <div className="h-4 bg-[#232323] rounded w-24"></div>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="text-center py-2">
+                      <span className="text-[#C7C7C7]/60 text-sm">Cargando episodios...</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {paginatedEpisodes.map((episode, index) => {
                     const globalIndex = (currentPage - 1) * EPISODES_PER_PAGE + index;
                     const isPlaying = isPlayingThisPodcast &&
                       playerState.currentEpisode?.id === episode.id &&
@@ -336,7 +371,8 @@ export default function PodcastDetailPage() {
                       </button>
                     );
                   })}
-                </div>
+                  </div>
+                )}
               </div>
 
               {podcast?.authors && podcast.authors.length > 0 && (
@@ -376,7 +412,10 @@ export default function PodcastDetailPage() {
                           alt={podcast.authors[currentAuthorIndex]?.name || 'Amplifier'} 
                           width={100} 
                           height={100} 
-                          className='rounded-2xl w-full aspect-square object-cover' 
+                          className='rounded-2xl w-full aspect-square object-cover'
+                          loading="lazy"
+                          placeholder="blur"
+                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                         />
                         <a 
                           href={podcast.authors[currentAuthorIndex]?.instagramUrl || '#'} 
