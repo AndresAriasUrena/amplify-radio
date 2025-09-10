@@ -410,6 +410,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
 class RSSService {
   private static instance: RSSService;
   private cache: Map<string, { data: RSSFeedData; timestamp: number }> = new Map();
+  private podcastCache: Map<string, { show: PodcastShow; timestamp: number }> = new Map();
   private readonly CACHE_DURATION = RSS_CONFIG.CACHE_DURATION;
 
   static getInstance(): RSSService {
@@ -790,8 +791,104 @@ class RSSService {
   }
 
   async getPodcastById(id: string): Promise<PodcastShow | null> {
-    const shows = await this.getAllPodcasts();
-    return shows.find(show => show.id === id) || null;
+    // Verificar cache de podcasts específicos primero
+    const cachedPodcast = this.podcastCache.get(id);
+    if (cachedPodcast && Date.now() - cachedPodcast.timestamp < this.CACHE_DURATION) {
+      return cachedPodcast.show;
+    }
+
+    // Encontrar la URL del RSS basada en el ID sin cargar todos los podcasts
+    const targetFeed = PODCAST_RSS_FEEDS.find(feed => 
+      this.generateIdFromUrl(feed.url) === id
+    );
+    
+    if (!targetFeed) {
+      return null;
+    }
+
+    // Si tenemos datos locales, crear un show básico inmediatamente
+    if (PODCAST_LOCAL_IMAGES[targetFeed.url] && PODCAST_AUTHORS[targetFeed.url]) {
+      const basicShow: PodcastShow = {
+        id: this.generateIdFromUrl(targetFeed.url),
+        title: PODCAST_AUTHORS[targetFeed.url]?.[0]?.podcastName || 'Podcast',
+        description: 'Cargando descripción...',
+        imageUrl: PODCAST_LOCAL_IMAGES[targetFeed.url],
+        link: targetFeed.url,
+        rssUrl: targetFeed.url,
+        language: 'es',
+        author: undefined,
+        category: undefined,
+        lastBuildDate: undefined,
+        authors: PODCAST_AUTHORS[targetFeed.url] || [],
+        status: targetFeed.status
+      };
+      
+      // Cachear y retornar inmediatamente
+      this.podcastCache.set(id, { show: basicShow, timestamp: Date.now() });
+      
+      // Cargar datos completos en segundo plano
+      this.fetchRSSFeed(targetFeed.url).then(feedData => {
+        const completeShow: PodcastShow = {
+          ...basicShow,
+          title: feedData.title,
+          description: feedData.description,
+          author: feedData.author,
+          category: feedData.category,
+          lastBuildDate: feedData.lastBuildDate
+        };
+        this.podcastCache.set(id, { show: completeShow, timestamp: Date.now() });
+      }).catch(error => {
+        console.warn(`Error al cargar datos completos para ${id}:`, error);
+      });
+      
+      return basicShow;
+    }
+
+    try {
+      // Cargar solo este podcast específico
+      const feedData = await this.fetchRSSFeed(targetFeed.url);
+      const show: PodcastShow = {
+        id: this.generateIdFromUrl(targetFeed.url),
+        title: feedData.title,
+        description: feedData.description,
+        imageUrl: PODCAST_LOCAL_IMAGES[targetFeed.url] || feedData.image,
+        link: feedData.link,
+        rssUrl: targetFeed.url,
+        language: feedData.language,
+        author: feedData.author,
+        category: feedData.category,
+        lastBuildDate: feedData.lastBuildDate,
+        authors: PODCAST_AUTHORS[targetFeed.url] || [],
+        status: targetFeed.status
+      };
+      
+      // Cachear el resultado completo
+      this.podcastCache.set(id, { show, timestamp: Date.now() });
+      return show;
+    } catch (error) {
+      console.error(`Error al cargar podcast ${id}:`, error);
+      
+      // Crear fallback con la información local disponible
+      if (PODCAST_LOCAL_IMAGES[targetFeed.url]) {
+        const fallbackShow: PodcastShow = {
+          id: this.generateIdFromUrl(targetFeed.url),
+          title: PODCAST_AUTHORS[targetFeed.url]?.[0]?.podcastName || 'Podcast',
+          description: 'Información temporalmente no disponible',
+          imageUrl: PODCAST_LOCAL_IMAGES[targetFeed.url],
+          link: targetFeed.url,
+          rssUrl: targetFeed.url,
+          language: 'es',
+          author: undefined,
+          category: undefined,
+          lastBuildDate: undefined,
+          authors: PODCAST_AUTHORS[targetFeed.url] || [],
+          status: targetFeed.status
+        };
+        return fallbackShow;
+      }
+      
+      return null;
+    }
   }
 
   private generateIdFromUrl(url: string): string {

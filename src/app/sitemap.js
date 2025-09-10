@@ -4,6 +4,9 @@ import { SEO_CONFIG } from '@/lib/seo';
 export default async function sitemap() {
   const baseUrl = SEO_CONFIG.siteUrl;
   
+  // Timeout para prevenir builds largos
+  const SITEMAP_TIMEOUT = 30000; // 30 segundos
+  
   const staticPages = [
     {
       url: baseUrl,
@@ -32,38 +35,38 @@ export default async function sitemap() {
   ];
 
   let allPosts = [];
+  
+  // Función para hacer fetch con timeout
+  const fetchWithTimeout = async (fetchFunction, timeout) => {
+    return Promise.race([
+      fetchFunction(),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), timeout)
+      )
+    ]);
+  };
+  
   try {
-    const firstBatch = await WordPressService.getPosts({ 
-      page: 1, 
-      perPage: 100,
-      orderBy: 'date',
-      order: 'desc'
-    });
+    console.log('Fetching posts for sitemap...');
+    
+    // Limitar a solo los primeros 50 posts más recientes para acelerar el build
+    const firstBatch = await fetchWithTimeout(
+      () => WordPressService.getPosts({ 
+        page: 1, 
+        perPage: 50, // Reducido de 100 a 50
+        orderBy: 'date',
+        order: 'desc'
+      }),
+      SITEMAP_TIMEOUT
+    );
     
     allPosts = [...firstBatch.posts];
+    console.log(`Fetched ${allPosts.length} posts for sitemap`);
     
-    if (firstBatch.totalPages > 1) {
-      const remainingPages = Array.from(
-        { length: firstBatch.totalPages - 1 }, 
-        (_, i) => i + 2
-      );
-      
-      for (const page of remainingPages) {
-        try {
-          const batch = await WordPressService.getPosts({ 
-            page, 
-            perPage: 100,
-            orderBy: 'date',
-            order: 'desc'
-          });
-          allPosts = [...allPosts, ...batch.posts];
-        } catch (error) {
-          console.error(`Error fetching page ${page}:`, error);
-        }
-      }
-    }
   } catch (error) {
     console.error('Error fetching posts for sitemap:', error);
+    console.log('Continuing with static pages only...');
+    // Continuar con páginas estáticas si WordPress falla
   }
 
   const newsPages = allPosts.map((post) => ({

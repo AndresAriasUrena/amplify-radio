@@ -24,6 +24,7 @@ export default function PodcastDetailPage() {
   const { playEpisode, playerState } = usePlayer();
   const [currentPage, setCurrentPage] = useState(1);
   const [currentAuthorIndex, setCurrentAuthorIndex] = useState(0);
+  const [showSecondaryContent, setShowSecondaryContent] = useState(false);
   const EPISODES_PER_PAGE = 7;
 
   const cleanHtml = (htmlString: string): string => {
@@ -71,10 +72,11 @@ export default function PodcastDetailPage() {
         setEpisodesLoading(true);
         setError(null);
 
-        // PASO 1: Cargar información básica del podcast primero
+        // PASO 1: Cargar información básica del podcast (ahora optimizado para ser instantáneo)
         const podcastData = await RSSService.getPodcastById(params.id as string);
         if (!podcastData) {
           setError('Podcast no encontrado');
+          setLoading(false);
           return;
         }
 
@@ -83,15 +85,20 @@ export default function PodcastDetailPage() {
         document.title = `${podcastData.title} | Amplify Radio`;
         
         // PASO 2: Cargar episodios progresivamente en segundo plano
-        await RSSService.getPodcastEpisodesProgressive(
+        RSSService.getPodcastEpisodesProgressive(
           podcastData.rssUrl,
           (episodesData, isComplete) => {
             setEpisodes(episodesData);
             if (isComplete) {
               setEpisodesLoading(false);
+              // Mostrar contenido secundario después de cargar episodios
+              setTimeout(() => setShowSecondaryContent(true), 500);
             }
           }
-        );
+        ).catch(err => {
+          console.error('Error cargando episodios:', err);
+          setEpisodesLoading(false);
+        });
         
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error al cargar el podcast');
@@ -272,23 +279,28 @@ export default function PodcastDetailPage() {
                     <Image
                       src={podcast.imageUrl || '/placeholder-podcast.jpg'}
                       alt={cleanHtml(podcast.title)}
-                      width={100}
-                      height={100}
+                      width={160}
+                      height={160}
                       className="rounded-2xl object-cover w-full lg:w-40 shadow-md shadow-black" 
                       style={{boxShadow: '2px 10px 10px 2px rgba(0, 0, 0, 0.9)'}}
                       priority={true}
+                      loading="eager"
                       placeholder="blur"
                       blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                     />
                   </div>
                 </div>
+                {showSecondaryContent && (
+                  <div className='hidden lg:block'>
+                    <PodcastsGridHome />
+                  </div>
+                )}
+              </div>
+              {showSecondaryContent && (
                 <div className='hidden lg:block'>
-                  <PodcastsGridHome />
+                  <ScheduleGrid />
                 </div>
-              </div>
-              <div className='hidden lg:block'>
-                <ScheduleGrid />
-              </div>
+              )}
             </div>
 
             <div className='w-full lg:w-[25%] lg:overflow-y-auto lg:max-h-[90vh] scrollbar-hide'>
@@ -375,7 +387,7 @@ export default function PodcastDetailPage() {
                 )}
               </div>
 
-              {podcast?.authors && podcast.authors.length > 0 && (
+              {showSecondaryContent && podcast?.authors && podcast.authors.length > 0 && (
                 <div className='mt-5'>
                   <div className='flex flex-row items-center justify-between'>
                     <h2 className="font-lexend font-semibold text-xl uppercase">Amplifiers</h2>
