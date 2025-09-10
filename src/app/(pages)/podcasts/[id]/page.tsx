@@ -353,7 +353,7 @@ export default function PodcastDetailPage() {
                       playerState.isPlaying;
                     return (
                       <button
-                        key={episode.id}
+                        key={`${episode.id || episode.guid || 'episode'}-${globalIndex}`}
                         onClick={() => handlePlayEpisode(episode, globalIndex)}
                         className={`bg-[#1A1A1A] rounded-xl p-3 hover:bg-[#232323] transition-colors group w-full ${isPlaying ? 'bg-[#232323] border border-[#E5754C]' : ''
                           }`}

@@ -1,6 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { RSS_CONFIG } from '@/lib/rssConfig';
 
+async function fetchDirect(url: string): Promise<string> {
+  const directStartTime = Date.now();
+  console.log(`🎯 Intentando conexión directa: ${url}`);
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), RSS_CONFIG.REQUEST_TIMEOUT);
+    
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: RSS_CONFIG.REQUEST_HEADERS
+    });
+    
+    clearTimeout(timeoutId);
+    const directDuration = Date.now() - directStartTime;
+    
+    console.log(`📊 Directo Status: ${response.status} ${response.statusText} (${directDuration}ms)`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const responseText = await response.text();
+    console.log(`✅ Conexión directa exitosa (${directDuration}ms total)`);
+    return responseText;
+    
+  } catch (error) {
+    const directFailTime = Date.now() - directStartTime;
+    console.warn(`❌ Conexión directa falló para ${url} (${directFailTime}ms):`, error);
+    throw error;
+  }
+}
+
 async function fetchWithProxy(url: string, proxyIndex: number = 0): Promise<string> {
   if (proxyIndex >= RSS_CONFIG.PROXY_SERVICES.length) {
     throw new Error('Todos los servicios proxy fallaron');
@@ -77,7 +110,21 @@ export async function GET(request: NextRequest) {
     console.log(`🔄 Iniciando fetch para: ${url}`);
     const fetchStartTime = Date.now();
     
-    const rssContent = await fetchWithProxy(url);
+    let rssContent: string;
+    
+    // Para feeds de Captivate.fm, intentar conexión directa primero (tienen CORS habilitado)
+    if (url.includes('feeds.captivate.fm')) {
+      console.log(`📍 Feed de Captivate detectado, intentando conexión directa primero`);
+      try {
+        rssContent = await fetchDirect(url);
+      } catch (directError) {
+        console.log(`⚠️ Conexión directa falló, intentando con proxy como fallback`);
+        rssContent = await fetchWithProxy(url);
+      }
+    } else {
+      // Para otros feeds, usar proxy como antes
+      rssContent = await fetchWithProxy(url);
+    }
     
     const fetchEndTime = Date.now();
     const fetchDuration = fetchEndTime - fetchStartTime;

@@ -1,7 +1,7 @@
 // Configuración para el RSS Service
 export const RSS_CONFIG = {
-  // Timeout para peticiones (en milisegundos) - Más agresivo para mayor velocidad
-  REQUEST_TIMEOUT: 5000,
+  // Timeout para peticiones (en milisegundos) - Optimizado para conexiones directas
+  REQUEST_TIMEOUT: 8000,
   
   // Duración del cache (en milisegundos) - 30 minutos
   CACHE_DURATION: 30 * 60 * 1000,
