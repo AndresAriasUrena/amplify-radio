@@ -3,6 +3,40 @@ import { WordPressPost, WordPressCategory, WordPressTag, PostsResponse, Categori
 const WORDPRESS_API_BASE = 'https://amplify.aurigital.com/wp-json/wp/v2';
 
 class WordPressService {
+  static decodeHtmlEntities(text: string): string {
+    if (!text) return '';
+    const namedEntities: Record<string, string> = {
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>',
+      '&quot;': '"',
+      '&apos;': "'",
+      '&nbsp;': ' ',
+      '&ldquo;': '“',
+      '&rdquo;': '”',
+      '&lsquo;': '‘',
+      '&rsquo;': '’',
+      '&ndash;': '–',
+      '&mdash;': '—',
+      '&hellip;': '…',
+      '&laquo;': '«',
+      '&raquo;': '»',
+      '&iexcl;': '¡',
+      '&iquest;': '¿'
+    };
+    let decoded = text.replace(/&[a-zA-Z]+?;/g, (entity) => namedEntities[entity] ?? entity);
+    decoded = decoded.replace(/&#(\d+);/g, (_m, dec) => {
+      const code = parseInt(dec, 10);
+      if (Number.isNaN(code)) return _m;
+      try { return String.fromCodePoint(code); } catch { return _m; }
+    });
+    decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_m, hex) => {
+      const code = parseInt(hex, 16);
+      if (Number.isNaN(code)) return _m;
+      try { return String.fromCodePoint(code); } catch { return _m; }
+    });
+    return decoded;
+  }
   static async getPosts(options: GetPostsOptions = {}): Promise<PostsResponse> {
     const {
       page = 1,
@@ -237,7 +271,8 @@ class WordPressService {
   }
 
   static cleanHtml(html: string): string {
-    return html.replace(/<[^>]+>/g, '');
+    const withoutTags = html ? html.replace(/<[^>]+>/g, '') : '';
+    return WordPressService.decodeHtmlEntities(withoutTags).trim();
   }
 }
 

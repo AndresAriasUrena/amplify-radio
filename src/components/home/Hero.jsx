@@ -202,7 +202,7 @@ const Hero = ({ tagSlug = "hero" }) => {
                           </span>
                         </div>
                         <h3 className={`xl:text-2xl text-xl uppercase leading-tight text-[#E3E3E3] font-jost font-medium`}>
-                          {post.title.rendered}
+                          {WordPressService.cleanHtml(post.title.rendered)}
                         </h3>
                       </Link>
                     </div>
