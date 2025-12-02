@@ -84,7 +84,9 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto flex items-center justify-between py-5">
           {/* Logo */}
           <div className="flex items-center gap-4">
-            <img src="/assets/LogoAmplify.svg" alt="Amplify" width={120} height={80} className='mr-5 h-20 w-20 md:h-[100px] md:w-[120px]'/>
+            <Link href="/">
+              <img src="/assets/LogoAmplify.svg" alt="Amplify" width={120} height={80} className='mr-5 h-20 w-20 md:h-[100px] md:w-[120px]'/>
+            </Link>
 
           {/* Desktop Navigation Links - Hidden on mobile */}
           <div className="hidden lg:flex items-center space-x-4">
