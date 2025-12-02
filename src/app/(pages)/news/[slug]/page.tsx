@@ -104,40 +104,40 @@ export default async function NewsDetailPage({ params }: { params: { slug: strin
             <JsonLd data={newsSchema} />
             <div className="min-h-screen font-jost">
                 <Navbar />
-                <div className="px-4 sm:px-8">
-                    <div className="max-w-7xl mx-auto relative">
+                <div className="px-4 sm:px-8 w-full">
+                    <div className="max-w-7xl mx-auto relative w-full">
                         <Breadcrumbs items={breadcrumbItems} />
-                        <div className="flex flex-col lg:flex-row gap-4 lg:gap-16">
+                        <div className="flex flex-col lg:flex-row gap-4 lg:gap-16 w-full">
                             <aside className="order-1 lg:order-2 w-full lg:w-72 flex flex-col gap-8">
                                 <div className="hidden lg:block">
                                     <FilterSidebar />
                                 </div>
                             </aside>
-                            <div className="flex-1 order-2 lg:order-1 items-center justify-center text-center">
+                            <div className="flex-1 order-2 lg:order-1 items-center justify-center text-center w-full">
                                 {mainCategory && (
                                     <span className="inline-block mb-4 px-4 py-2 rounded-full bg-[#232323] text-white/60 text-xs font-normal">
                                         {mainCategory.name}
                                     </span>
                                 )}
-                                <h1 className="font-lexend text-sm md:text-lg lg:text-3xl font-semibold text-[#C7C7C7] mb-2">
+                                <h1 className="font-lexend text-sm md:text-lg lg:text-3xl font-semibold text-[#C7C7C7] mb-2 break-words">
                                     {cleanTitle}
                                 </h1>
-                                <div className="mb-6 text-[#FFFFFF]/60 text-sm">
+                                <div className="mb-6 text-[#FFFFFF]/60 text-sm break-words">
                                     {author} <span className="text-[#757575]">- {formatDate(post.date)}</span>
                                 </div>
-                                <div className="mb-8">
+                                <div className="mb-8 w-full">
                                     <img
                                         src={featuredImage}
                                         alt={cleanTitle}
                                         className="w-full max-h-[400px] object-cover rounded-2xl mx-auto"
                                     />
                                 </div>
-                                <div className="flex flex-row gap-8">
+                                <div className="flex flex-row gap-8 w-full">
                                     <div className="hidden lg:block text-left w-full max-w-xs">
                                         <NewsSectionsSidebar html={htmlWithIds} />
                                     </div>
                                     <article
-                                        className="prose prose-invert text-[#C7C7C7] prose-h2:text-[#E5754C] prose-a:text-[#E5754C] prose-strong:text-white mx-auto text-left"
+                                        className="prose prose-invert text-[#C7C7C7] prose-h2:text-[#E5754C] prose-a:text-[#E5754C] prose-strong:text-white mx-auto text-left w-full max-w-full break-words overflow-wrap-anywhere"
                                         dangerouslySetInnerHTML={{ __html: htmlWithIds }}
                                     />
                                 </div>
