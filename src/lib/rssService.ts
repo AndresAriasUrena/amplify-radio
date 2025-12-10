@@ -4,12 +4,12 @@ import * as xml2js from 'xml2js';
 
 const PODCAST_RSS_FEEDS = [
   // ACTUALES
-  { url: 'https://feeds.captivate.fm/la-telarana/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/la-telaraa/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/doble-click/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/pulso-empresarial/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/ciudad-canibal/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/aleatorio/', status: 'actual' as const },
-  { url: 'https://feeds.captivate.fm/registros/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/registros1/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/dada/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/wax/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/lit-by-lit/', status: 'actual' as const },
