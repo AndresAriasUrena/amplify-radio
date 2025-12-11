@@ -6,31 +6,32 @@ const PODCAST_RSS_FEEDS = [
   // ACTUALES
   { url: 'https://feeds.captivate.fm/la-telaraa/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/doble-click/', status: 'actual' as const },
-  { url: 'https://feeds.captivate.fm/pulso-empresarial/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/pulso-empresarial1/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/ciudad-canibal/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/aleatorio/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/registros1/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/dada/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/wax/', status: 'actual' as const },
-  { url: 'https://feeds.captivate.fm/lit-by-lit/', status: 'actual' as const },
-  { url: 'https://feeds.captivate.fm/flamingo-de-noche/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/dance-to-this-radio/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/lit-by-lit1/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/flamingo-de-noche1/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/cross-fade/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/conexion-220/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/frecuencia-1111/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/verso-per-verso/', status: 'actual' as const },
   
   // HISTORIALES
-  { url: 'https://feeds.captivate.fm/que-intensas/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/que-intensas1/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/alta-frecuencia/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/movete-en-el-mundo/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/canalizando-amor/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/el-gallinero/', status: 'historial' as const },
-  { url: 'https://feeds.captivate.fm/emprendedores-de-vida/', status: 'historial' as const },
-  { url: 'https://feeds.captivate.fm/galeria-nocturna/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/emprendedores-de-vida1/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/galeria-nocturna1/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/los-incorregibles/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/pelos-en-la-ropa/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/pon-tu-mente-al-sol/', status: 'historial' as const },
-  { url: 'https://feeds.captivate.fm/que-buen-lugar/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/que-buen-lugar1/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/divina-suerte/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/caravana-radio/', status: 'historial' as const },
 ];
@@ -38,36 +39,38 @@ const PODCAST_RSS_FEEDS = [
 // Mapeo de URLs RSS a imágenes locales (ordenado por prioridad de carga)
 const PODCAST_LOCAL_IMAGES: { [rssUrl: string]: string } = {
   // PRIORIDAD 1 - Podcasts más populares (cargan primero)
-  'https://feeds.captivate.fm/la-telarana/': '/assets/podcast/la-telaraña.avif',
+  'https://feeds.captivate.fm/la-telaraa/': '/assets/podcast/la-telaraña.avif',
   'https://feeds.captivate.fm/doble-click/': '/assets/podcast/doble-click.avif',
   'https://feeds.captivate.fm/ciudad-canibal/': '/assets/podcast/ciudad-canibal.avif',
   
   // PRIORIDAD 2 - Podcasts actuales populares
-  'https://feeds.captivate.fm/pulso-empresarial/': '/assets/podcast/pulso-empresarial.avif',
+  'https://feeds.captivate.fm/pulso-empresarial1/': '/assets/podcast/pulso-empresarial.avif',
   'https://feeds.captivate.fm/aleatorio/': '/assets/podcast/aleatorio.avif',
-  'https://feeds.captivate.fm/registros/': '/assets/podcast/registros.avif',
+  'https://feeds.captivate.fm/registros1/': '/assets/podcast/registros.avif',
   
   // PRIORIDAD 3 - Resto de actuales
   'https://feeds.captivate.fm/dada/': '/assets/podcast/dada.avif',
   'https://feeds.captivate.fm/wax/': '/assets/podcast/wax.avif',
-  'https://feeds.captivate.fm/lit-by-lit/': '/assets/podcast/lit-by-bit.avif',
-  'https://feeds.captivate.fm/flamingo-de-noche/': '/assets/podcast/flamingo.avif',
+  // NOTA: agregar archivo real en public/assets/podcast/dance-to-this-radio.avif
+  'https://feeds.captivate.fm/dance-to-this-radio/': '/assets/podcast/dance-to-this-radio.avif',
+  'https://feeds.captivate.fm/lit-by-lit1/': '/assets/podcast/lit-by-bit.avif',
+  'https://feeds.captivate.fm/flamingo-de-noche1/': '/assets/podcast/flamingo.avif',
   'https://feeds.captivate.fm/cross-fade/': '/assets/podcast/crossfade.avif',
   'https://feeds.captivate.fm/conexion-220/': '/assets/podcast/conexion220.avif',
   'https://feeds.captivate.fm/verso-per-verso/': '/assets/podcast/versoperverso.avif',
   // 'https://feeds.captivate.fm/frecuencia-1111/': '/assets/podcast/frecuencia1111.avif', // Missing file - will use fallback
   
   // HISTORIALES - Menor prioridad
-  'https://feeds.captivate.fm/que-intensas/': '/assets/podcast/que-intensas.avif',
+  'https://feeds.captivate.fm/que-intensas1/': '/assets/podcast/que-intensas.avif',
   'https://feeds.captivate.fm/alta-frecuencia/': '/assets/podcast/alta-frecuencia.avif',
   'https://feeds.captivate.fm/movete-en-el-mundo/': '/assets/podcast/movete-en-el-mundo.avif',
   'https://feeds.captivate.fm/canalizando-amor/': '/assets/podcast/canalizando.avif',
   'https://feeds.captivate.fm/el-gallinero/': '/assets/podcast/el-gallinero.avif',
-  'https://feeds.captivate.fm/emprendedores-de-vida/': '/assets/podcast/emprendedores.avif',
-  'https://feeds.captivate.fm/galeria-nocturna/': '/assets/podcast/galeria-nocturna.avif',
+  'https://feeds.captivate.fm/emprendedores-de-vida1/': '/assets/podcast/emprendedores.avif',
+  'https://feeds.captivate.fm/galeria-nocturna1/': '/assets/podcast/galeria-nocturna.avif',
   'https://feeds.captivate.fm/pelos-en-la-ropa/': '/assets/podcast/pelos-en-la-ropa.avif',
   'https://feeds.captivate.fm/pon-tu-mente-al-sol/': '/assets/podcast/mente-al-sol.avif',
-  'https://feeds.captivate.fm/que-buen-lugar/': '/assets/podcast/buen-lugar.avif',
+  'https://feeds.captivate.fm/que-buen-lugar1/': '/assets/podcast/buen-lugar.avif',
   'https://feeds.captivate.fm/caravana-radio/': '/assets/podcast/caravana-radio.avif',
   // 'https://feeds.captivate.fm/los-incorregibles/': '/assets/podcast/incorregibles.avif', // Missing file - will use fallback
   // 'https://feeds.captivate.fm/divina-suerte/': '/assets/podcast/divina-suerte.avif', // Missing file - will use fallback
@@ -75,7 +78,7 @@ const PODCAST_LOCAL_IMAGES: { [rssUrl: string]: string } = {
 
 const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   // ACTUALES CON AUTORES CONOCIDOS
-  'https://feeds.captivate.fm/la-telarana/': [
+  'https://feeds.captivate.fm/la-telaraa/': [
     {
       name: 'Emma Tristán',
       description: 'Emma Tristán es geóloga y consultora ambiental y de salud ocupacional, con más de 20 años de experiencia internacional. Cuenta con un Doctorado en Geología Ambiental otorgado por Imperial College, Reino Unido. Se ha especializado en temas relacionados con el financiamiento climático, los riesgos y oportunidades ambientales y sociales para el sector financiero y el liderazgo en seguridad. Además, ha producido los cortometrajes La niña fantasma (2020) y Formas de pescar (2022) y ha publicado artículos de opinión en medios como el Periódico La Nación, la Republica y Página Abierta. Es directora general de Futuris Consulting, una firma consultora con oficinas en Costa Rica.',
@@ -106,7 +109,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/pulso-empresarial/': [
+  'https://feeds.captivate.fm/pulso-empresarial1/': [
     {
       name: 'Nilsen Buján',
       description: 'Hijo de Milton y Carmen, menor de 4 hermanos, deportista no élite, amante de lo no tradicional, de lo disruptivo en positivo, creyente en Dios, apasionado por escuchar a todos los que quieran aportar en la vida. Con experiencia en comunicación en medios internacionales y nacionales. Con una visión de orden, crecimiento y desarrollo personal y profesional. No soy un todólogo pero sí un ideólogo y aprendiz de lo positivo.',
@@ -114,6 +117,17 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       instagramUrl: 'https://instagram.com/pulsoempresarialnb/',
       status: 'actual',
       podcastName: 'Pulso Empresarial',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/dance-to-this-radio/': [
+    {
+      name: 'Pablo Acuña',
+      description: 'Soy Pablo Acuña, fundador del medio web especializado en música: Dance To The Radio, que mutó a un programa radial en Amplify Radio.',
+      imageUrl: '/assets/autores/PabloAcuna.jpeg',
+      instagramUrl: 'https://www.facebook.com/people/Pablo-Acu%C3%B1a/1129835981/#',
+      status: 'actual',
+      podcastName: 'Dance to this Radio',
       podcastId: ''
     },
   ],
@@ -139,7 +153,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/registros/': [
+  'https://feeds.captivate.fm/registros1/': [
     {
       name: 'Alonso Aguilar',
       description: 'Alonso Aguilar es un escritor, periodista cultural y productor audiovisual freelance. En su trayectoria profesional ha colaborado en medios como Mubi Notebook, Cinema Tropical, Bandcamp, photogénie y Hyperallergic. Desde 2016 hace el intento de ver al menos una película al día. Su afición por la historia va desde su programa Registros en Amplify Radio, pasando por su labor como crítico de cine, y permea hasta su gusto por los juegos de mesa estratégicos.',
@@ -172,7 +186,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/lit-by-lit/': [
+  'https://feeds.captivate.fm/lit-by-lit1/': [
     {
       name: 'Lithus Arrieta Pérez',
       description: 'Melómano por naturaleza, agnóstico del género, gestor cultural y músico empírico desde niño. Lithus es uno de los productores de Amplify Radio y Director de la Agencia de Comunicación LIT INC. Todos los jueves a las 7:00pm comparte un espacio de dos horas en la frecuencia 95.5FM, que bajo el nombre de Lit by Lit, nos trae lo más fresco y novedoso de la escena musical de Costa Rica y Latinoamérica.',
@@ -183,7 +197,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/flamingo-de-noche/': [
+  'https://feeds.captivate.fm/flamingo-de-noche1/': [
     {
       name: 'Mauricio Dapena',
       description: 'Mauricio Dapena sacó licenciaturas en diseño publicitario y producción audiovisual en Costa Rica y un máster en dirección de cine en España. Siempre ha tenido una pasión por la comunicación creativa y esto lo ha llevado a incursionar como actor en diferentes proyectos, como productor/presentador en el show radial "El Mañanero" de la Meva Radio en Barcelona, además ha conducido y producido los talkshows "Untitled" para Canal 9 Costa Rica en 2011 y "Flamingo de Noche" que se crea en 2021 para abordar temas relevantes de la comunidad LGTBIQ+. Este último proyecto se convierte en un espacio multiplataforma con una primera temporada de 6 capítulos disponible en Youtube, una red noticiosa en Instagram y el programa de radio semanal con el mismo nombre en Amplify Radio.',
@@ -251,7 +265,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   ],
   
   // HISTORIALES CON AUTORES CONOCIDOS
-  'https://feeds.captivate.fm/que-intensas/': [
+  'https://feeds.captivate.fm/que-intensas1/': [
     {
       name: 'Ximena Esquivel',
       description: 'Diseñadora de joyas y emprendedora. Su marca de joyería, Ximena Esquivel Joyería, diseña joyería en plata con piedras semi preciosas y lleva más de 10 años en el mercado. Comercializa su joyería en redes sociales, tiendas de diseño nacional, aeropuertos, tiendas de souvenir y hoteles. Es graduada del EMBA de INCAE.',
@@ -293,7 +307,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/emprendedores-de-vida/': [
+  'https://feeds.captivate.fm/emprendedores-de-vida1/': [
     {
       name: 'Carla Castro',
       description: 'Mentora de emprendimiento y liderazgo femenino, comunicadora y productora de Emprendedores de Vida. Apasionada de la resiliencia puesta en práctica, porque la adversidad es capaz de sacar nuestra mejor versión. Me mueve contar estas historias como herramienta para inspirar. Mujer en constante construcción y madre de tres hijas.',
@@ -339,7 +353,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/galeria-nocturna/': [
+  'https://feeds.captivate.fm/galeria-nocturna1/': [
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
