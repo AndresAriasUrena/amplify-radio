@@ -7,12 +7,15 @@ const PODCAST_RSS_FEEDS = [
   { url: 'https://feeds.captivate.fm/la-telaraa/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/doble-click/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/pulso-empresarial1/', status: 'actual' as const },
-  { url: 'https://feeds.captivate.fm/ciudad-canibal/', status: 'actual' as const },
-  { url: 'https://feeds.captivate.fm/aleatorio/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/ciudad-canibal-/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/aleatorio-/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/registros1/', status: 'actual' as const },
-  { url: 'https://feeds.captivate.fm/dada/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/dad-/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/wax/', status: 'actual' as const },
-  { url: 'https://feeds.captivate.fm/dance-to-this-radio/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/dance-to-this-radio-/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/club-de-voces-/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/hablemos-business/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/a-que-no-sabas-/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/lit-by-lit1/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/flamingo-de-noche1/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/cross-fade/', status: 'actual' as const },
@@ -22,15 +25,15 @@ const PODCAST_RSS_FEEDS = [
   
   // HISTORIALES
   { url: 'https://feeds.captivate.fm/que-intensas1/', status: 'historial' as const },
-  { url: 'https://feeds.captivate.fm/alta-frecuencia/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/alta-frecuencia-/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/movete-en-el-mundo/', status: 'historial' as const },
-  { url: 'https://feeds.captivate.fm/canalizando-amor/', status: 'historial' as const },
-  { url: 'https://feeds.captivate.fm/el-gallinero/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/canalizando-amor-/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/el-gallinero-/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/emprendedores-de-vida1/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/galeria-nocturna1/', status: 'historial' as const },
-  { url: 'https://feeds.captivate.fm/los-incorregibles/', status: 'historial' as const },
-  { url: 'https://feeds.captivate.fm/pelos-en-la-ropa/', status: 'historial' as const },
-  { url: 'https://feeds.captivate.fm/pon-tu-mente-al-sol/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/los-incorregibles-/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/pelos-en-la-ropa-/', status: 'historial' as const },
+  { url: 'https://feeds.captivate.fm/pon-tu-mente-al-sol-/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/que-buen-lugar1/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/divina-suerte/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/caravana-radio/', status: 'historial' as const },
@@ -41,18 +44,24 @@ const PODCAST_LOCAL_IMAGES: { [rssUrl: string]: string } = {
   // PRIORIDAD 1 - Podcasts más populares (cargan primero)
   'https://feeds.captivate.fm/la-telaraa/': '/assets/podcast/la-telaraña.avif',
   'https://feeds.captivate.fm/doble-click/': '/assets/podcast/doble-click.avif',
-  'https://feeds.captivate.fm/ciudad-canibal/': '/assets/podcast/ciudad-canibal.avif',
+  'https://feeds.captivate.fm/ciudad-canibal-/': '/assets/podcast/ciudad-canibal.avif',
   
   // PRIORIDAD 2 - Podcasts actuales populares
   'https://feeds.captivate.fm/pulso-empresarial1/': '/assets/podcast/pulso-empresarial.avif',
-  'https://feeds.captivate.fm/aleatorio/': '/assets/podcast/aleatorio.avif',
+  'https://feeds.captivate.fm/aleatorio-/': '/assets/podcast/aleatorio.avif',
   'https://feeds.captivate.fm/registros1/': '/assets/podcast/registros.avif',
   
   // PRIORIDAD 3 - Resto de actuales
-  'https://feeds.captivate.fm/dada/': '/assets/podcast/dada.avif',
+  'https://feeds.captivate.fm/dad-/': '/assets/podcast/dada.avif',
   'https://feeds.captivate.fm/wax/': '/assets/podcast/wax.avif',
   // NOTA: agregar archivo real en public/assets/podcast/dance-to-this-radio.avif
-  'https://feeds.captivate.fm/dance-to-this-radio/': '/assets/podcast/dance-to-this-radio.avif',
+  'https://feeds.captivate.fm/dance-to-this-radio-/': '/assets/podcast/dance-to-this-radio.avif',
+  // NOTA: agregar archivo real en public/assets/podcast/club-de-voces.avif
+  'https://feeds.captivate.fm/club-de-voces-/': '/assets/podcast/club-de-voces.avif',
+  // NOTA: agregar archivo real en public/assets/podcast/hablemos-business.avif
+  'https://feeds.captivate.fm/hablemos-business/': '/assets/podcast/hablemos-business.avif',
+  // NOTA: agregar archivo real en public/assets/podcast/a-que-no-sabias.avif
+  'https://feeds.captivate.fm/a-que-no-sabas-/': '/assets/podcast/a-que-no-sabias.avif',
   'https://feeds.captivate.fm/lit-by-lit1/': '/assets/podcast/lit-by-bit.avif',
   'https://feeds.captivate.fm/flamingo-de-noche1/': '/assets/podcast/flamingo.avif',
   'https://feeds.captivate.fm/cross-fade/': '/assets/podcast/crossfade.avif',
@@ -62,16 +71,16 @@ const PODCAST_LOCAL_IMAGES: { [rssUrl: string]: string } = {
   
   // HISTORIALES - Menor prioridad
   'https://feeds.captivate.fm/que-intensas1/': '/assets/podcast/que-intensas.avif',
-  'https://feeds.captivate.fm/alta-frecuencia/': '/assets/podcast/alta-frecuencia.avif',
+  'https://feeds.captivate.fm/alta-frecuencia-/': '/assets/podcast/alta-frecuencia.avif',
   'https://feeds.captivate.fm/movete-en-el-mundo/': '/assets/podcast/movete-en-el-mundo.avif',
-  'https://feeds.captivate.fm/canalizando-amor/': '/assets/podcast/canalizando.avif',
-  'https://feeds.captivate.fm/el-gallinero/': '/assets/podcast/el-gallinero.avif',
+  'https://feeds.captivate.fm/canalizando-amor-/': '/assets/podcast/canalizando.avif',
+  'https://feeds.captivate.fm/el-gallinero-/': '/assets/podcast/el-gallinero.avif',
   'https://feeds.captivate.fm/emprendedores-de-vida1/': '/assets/podcast/emprendedores.avif',
   'https://feeds.captivate.fm/galeria-nocturna1/': '/assets/podcast/galeria-nocturna.avif',
-  'https://feeds.captivate.fm/pelos-en-la-ropa/': '/assets/podcast/pelos-en-la-ropa.avif',
-  'https://feeds.captivate.fm/pon-tu-mente-al-sol/': '/assets/podcast/mente-al-sol.avif',
+  'https://feeds.captivate.fm/pelos-en-la-ropa-/': '/assets/podcast/pelos-en-la-ropa.avif',
+  'https://feeds.captivate.fm/pon-tu-mente-al-sol-/': '/assets/podcast/mente-al-sol.avif',
   'https://feeds.captivate.fm/que-buen-lugar1/': '/assets/podcast/buen-lugar.avif',
-  'https://feeds.captivate.fm/caravana-radio/': '/assets/podcast/caravana-radio.avif',
+  'https://feeds.captivate.fm/caravana-radio-/': '/assets/podcast/caravana-radio.avif',
   // 'https://feeds.captivate.fm/los-incorregibles/': '/assets/podcast/incorregibles.avif', // Missing file - will use fallback
   // 'https://feeds.captivate.fm/divina-suerte/': '/assets/podcast/divina-suerte.avif', // Missing file - will use fallback
 };
@@ -120,7 +129,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/dance-to-this-radio/': [
+  'https://feeds.captivate.fm/dance-to-this-radio-/': [
     {
       name: 'Pablo Acuña',
       description: 'Soy Pablo Acuña, fundador del medio web especializado en música: Dance To The Radio, que mutó a un programa radial en Amplify Radio.',
@@ -131,7 +140,40 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/ciudad-canibal/': [
+  'https://feeds.captivate.fm/club-de-voces-/': [
+    {
+      name: 'Jimena Smith',
+      description: 'Jimena Smith le guía en el programa “Club de Voces”. Smith es conocida por promover un estilo de vida saludable, de crecimiento y superación personal a través de sus redes sociales y su plataforma jimesmith.com.',
+      imageUrl: '/assets/autores/JimenaSmith.jpeg',
+      instagramUrl: '',
+      status: 'actual',
+      podcastName: 'Club de Voces',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/hablemos-business/': [
+    {
+      name: 'ICS',
+      description: 'Hablemos Business: Un espacio para adquirir las herramientas básicas para ordenar su empresa y prepararla para un crecimiento ordenado. “Ordenar el crecimiento es la clave del éxito”. Presentado por ICS.',
+      imageUrl: '/assets/autores/hablemosbussiness.jpeg',
+      instagramUrl: '',
+      status: 'actual',
+      podcastName: 'Hablemos Business',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/a-que-no-sabas-/': [
+    {
+      name: 'Francina Delgado Gómez',
+      description: '',
+      imageUrl: '/assets/autores/FrancinaDelgadoGómez.jpeg',
+      instagramUrl: '',
+      status: 'actual',
+      podcastName: '¿A que no sabías?',
+      podcastId: ''
+    },
+  ],
+  'https://feeds.captivate.fm/ciudad-canibal-/': [
     {
       name: 'Fernando Chironi',
       description: 'Me crié en Pavas. De tantas idas y vueltas siento que soy un resultado experimental de lo que me ha pasado, no le tengo miedo a estar equivocado, a pensar distinto, ni a cambiar mis posiciones. Lo que se dice en nuestros espacios es una más de las interpretaciones de lo qué pasa, no hay solamente una verdad, el relato debe ser plural e inclusivo; escúchanos los lunes y jueves de 1 a 3 pm en Ciudad Caníbal.',
@@ -142,7 +184,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/aleatorio/': [
+  'https://feeds.captivate.fm/aleatorio-/': [
     {
       name: 'Mauricio Artavia',
       description: 'Aleatorio es un programa de radio conducido por Mauricio Artavia que se transmite los lunes a las 7 pm por Amplify Radio 95.5 FM. El show explora la historia profunda de la música y sus artistas, enfocándose en canciones menos conocidas y bandas apreciadas por la crítica pero ignoradas por las radios comerciales. Con especiales dedicados a diversos géneros y artistas, desde íconos hasta grupos poco conocidos, Aleatorio busca ampliar el espectro cultural musical de sus oyentes, creando un "mundo paralelo al de los singles" que va más allá de los éxitos comerciales para descubrir gemas musicales ocultas.',
@@ -164,7 +206,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/dada/': [
+  'https://feeds.captivate.fm/dad-/': [
     {
       name: 'Stella Peralta',
       description: 'Stella es cantante, locutora y publicista con amplia experiencia en la industria musical, habiendo trabajado en Sony Music, como representante de bandas y vocalista de Le*Pop. Formada en canto clásico y popular, actualmente es host del programa "Ola Futura" en Radio 2 y presta su voz para comerciales. Emprendedora desde siempre, cofundó Trash (productos reciclados) y ahora desarrolla "Avellanas Pastelería" con su hermana chef. Amante del post punk, new wave y rock, disfruta la cocina vegana, el cine, los libros, la naturaleza y ayuda a animales callejeros, continuando el legado que le enseñó su hija Macris.',
@@ -285,7 +327,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/alta-frecuencia/': [
+  'https://feeds.captivate.fm/alta-frecuencia-/': [
     {
       name: 'Gabriela Muñoz Carrillo',
       description: 'Soy periodista desde hace 16 años, inicialmente en prensa escrita y televisión, cubriendo desde terremotos y la elección del Papa Francisco hasta el primer caso de AH1N1. Después de años de jornadas extenuantes, me dediqué a relaciones públicas y asesoría de prensa durante casi 8 años. La maternidad de mi hija Sofía transformó completamente mi perspectiva de vida, llevándome a valorar el bienestar y la paz. Ahora en "Alta Frecuencia", mi primera experiencia radial, combino mi pasión por comunicar con una vida más equilibrada, practicando mindfulness, disfrutando la cocina, los documentales y buscando un ejercicio que me motive antes de los 40.',
@@ -318,7 +360,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/divina-suerte/': [
+  'https://feeds.captivate.fm/divina-suerte-/': [
     {
       name: 'Sr.Loki',
       description: 'Tatuador, artista, locutor y productor de contenido. Con más de 10 años de experiencia en el mundo del tatuaje y la cultura pop.',
@@ -331,7 +373,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   ],
   
   // NUEVOS PODCASTS HISTORIALES - SIN AUTORES AÚN
-  'https://feeds.captivate.fm/canalizando-amor/': [
+  'https://feeds.captivate.fm/canalizando-amor-/': [
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
@@ -342,7 +384,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/el-gallinero/': [
+  'https://feeds.captivate.fm/el-gallinero-/': [
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
@@ -364,7 +406,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/los-incorregibles/': [
+  'https://feeds.captivate.fm/los-incorregibles-/': [
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
@@ -375,7 +417,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/pelos-en-la-ropa/': [
+  'https://feeds.captivate.fm/pelos-en-la-ropa-/': [
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
@@ -386,7 +428,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/pon-tu-mente-al-sol/': [
+  'https://feeds.captivate.fm/pon-tu-mente-al-sol-/': [
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
@@ -397,7 +439,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/que-buen-lugar/': [
+  'https://feeds.captivate.fm/que-buen-lugar1/': [
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
@@ -408,7 +450,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  'https://feeds.captivate.fm/caravana-radio/': [
+  'https://feeds.captivate.fm/caravana-radio-/': [
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
