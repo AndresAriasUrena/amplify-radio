@@ -6,12 +6,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import WordPressService from "@/lib/wordpressService";
 
-const Hero = ({ tagSlug = "hero" }) => {
+const Hero = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [tagId, setTagId] = useState(null);
   const sliderRef = useRef(null);
 
   useEffect(() => {
@@ -26,68 +25,27 @@ const Hero = ({ tagSlug = "hero" }) => {
   }, []);
 
   useEffect(() => {
-    const getTagId = async () => {
+    const fetchPosts = async () => {
       try {
-        if (!tagSlug) {
-          setTagId(null);
-          return;
-        }
+        setLoading(true);
 
-        const result = await WordPressService.getTags();
-        const id = result.tagsMap[tagSlug];
-        
-        if (id) {
-          setTagId(id);
-        } else {
-          console.warn(`Tag "${tagSlug}" no encontrado en WordPress`);
-          setTagId(null);
-        }
+        const result = await WordPressService.getPosts({
+          page: 1,
+          perPage: 3,
+          orderBy: 'date'
+        });
+
+        setPosts(result.posts);
       } catch (error) {
-        console.error('Error loading tags map:', error);
-        setTagId(null);
+        console.error('Error loading posts:', error);
+        setPosts([]);
+      } finally {
+        setLoading(false);
       }
     };
 
-    getTagId();
-  }, [tagSlug]);
-
-  const fetchPosts = async () => {
-    try {
-      setLoading(true);
-      
-      if (!tagId) {
-        setPosts([]);
-        return;
-      }
-
-      const result = await WordPressService.getPosts({
-        page: 1,
-        perPage: 3,
-        tags: [tagId],
-        orderBy: 'date'
-      });
-      
-      const data = result.posts;
-      
-      if (data.length === 3) {
-        const reorderedPosts = [data[2], data[0], data[1]];
-        setPosts(reorderedPosts);
-      } else {
-        setPosts(data);
-      }
-    } catch (error) {
-      console.error('Error loading posts:', error);
-      setPosts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (tagId !== undefined) {
-      fetchPosts();
-    }
-  }, [tagId]);
+    fetchPosts();
+  }, []);
 
   const settings = {
     dots: true,
