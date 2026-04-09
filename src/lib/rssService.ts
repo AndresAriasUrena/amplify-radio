@@ -67,7 +67,7 @@ const PODCAST_LOCAL_IMAGES: { [rssUrl: string]: string } = {
   'https://feeds.captivate.fm/cross-fade/': '/assets/podcast/crossfade.avif',
   'https://feeds.captivate.fm/conexion-220/': '/assets/podcast/conexion220.avif',
   'https://feeds.captivate.fm/verso-per-verso/': '/assets/podcast/versoperverso.avif',
-  // 'https://feeds.captivate.fm/frecuencia-1111/': '/assets/podcast/frecuencia1111.avif', // Missing file - will use fallback
+  'https://feeds.captivate.fm/frecuencia-1111/': '/assets/podcast/frecuencia1111.png', // Missing file - will use fallback
   
   // HISTORIALES - Menor prioridad
   'https://feeds.captivate.fm/que-intensas1/': '/assets/podcast/que-intensas.avif',
@@ -285,9 +285,9 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   ],
   'https://feeds.captivate.fm/frecuencia-1111/': [
     {
-      name: 'John Doe',
-      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      name: 'Marianella Cordero',
+      description: 'Periodista políglota con 29 años de experiencia en cobertura nacional e internacional, especializada en análisis, edición y curaduría de contenidos para medios',
+      imageUrl: '/assets/autores/MarianellaCordero.jpeg',
       instagramUrl: 'https://www.instagram.com/',
       status: 'actual',
       podcastName: 'Frecuencia 11:11',
