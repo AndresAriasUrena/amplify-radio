@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import AurigitalBar from "@/components/AurigitalBar.jsx"
 
 const Footer = () => {
     return (
@@ -87,6 +88,7 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
+            <AurigitalBar/>
         </footer>
     );
 }
