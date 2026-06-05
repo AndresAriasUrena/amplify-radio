@@ -2,9 +2,9 @@ export default function AurigitalBar({ color }) {
   return (
     <div className="w-full bg-[#1a1a1a]">
       <a
-        href="https://aurigital.com"
+        href="https://aurigital.com?utm_source=amplify-radio&utm_medium=footer&utm_campaign=branding"
         target="_blank"
-        rel="noopener noreferrer"
+        rel="noopener"
         className="flex justify-center items-center mx-auto w-full h-10 hover:opacity-80 transition-opacity"
       >
         <span className="text-white uppercase text-xs text-center px-2">
