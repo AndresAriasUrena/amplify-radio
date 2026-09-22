@@ -1,7 +1,7 @@
 export const SEO_CONFIG = {
   siteName: 'Amplify Radio',
   siteUrl: 'https://amplifyradio.com/',
-  description: 'Amplify Radio - Tu estación de radio online con las últimas noticias, música y entretenimiento. Mantente informado con nuestras noticias actualizadas y disfruta de la mejor música las 24 horas.',
+  description: 'Amplify Radio - Una plataforma de música, cultura y entretenimiento que conecta sonidos, artistas y nuevas tendencias con una mirada alternativa y contemporánea.',
   keywords: 'radio online, noticias, música, entretenimiento, streaming, amplify radio, radio en vivo',
   author: 'Amplify Radio',
   twitterHandle: '@AmplifyRadio',

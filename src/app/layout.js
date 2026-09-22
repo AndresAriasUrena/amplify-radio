@@ -9,7 +9,7 @@ import { GoogleTagManager } from '@next/third-parties/google';
 
 export const metadata = generatePageMetadata({
   title: 'Amplify Radio - Tu Estación Online de Música y Noticias',
-  description: 'Amplify Radio - Tu estación de radio online con las últimas noticias, música y entretenimiento. Escucha radio en vivo las 24 horas y mantente informado.',
+  description: 'Amplify Radio - Una plataforma de música, cultura y entretenimiento que conecta sonidos, artistas y nuevas tendencias con una mirada alternativa y contemporánea.',
   keywords: 'amplify radio, radio online, radio en vivo, noticias, música, streaming, entretenimiento',
   path: ''
 });
