@@ -24,6 +24,7 @@ const Footer = () => {
                                 <li><Link href="/podcasts" className="hover:text-[#E5754C] transition-colors">Podcasts</Link></li>
                                 <li><Link href="/news" className="hover:text-[#E5754C] transition-colors">Noticias</Link></li>
                                 <li><Link href="/podcasts/#schedule" className="hover:text-[#E5754C] transition-colors">Horario</Link></li>
+                                <li><a href="https://grupocolumbia.co.cr/media-kit" target="_blank" rel="noopener noreferrer" className="hover:text-[#E5754C] transition-colors">Media Kit</a></li>
                             </ul>
                         </div>
 
