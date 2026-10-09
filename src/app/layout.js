@@ -5,7 +5,6 @@ import RadioPlayer from "@/components/RadioPlayer";
 import SplashPage from "@/components/SplashPage";
 import { generatePageMetadata, generateOrganizationSchema, SEO_CONFIG } from "@/lib/seo";
 import Script from 'next/script';
-import { GoogleTagManager } from '@next/third-parties/google';
 
 export const metadata = generatePageMetadata({
   title: 'Amplify Radio - Tu Estación Online de Música y Noticias',
@@ -40,7 +39,19 @@ export default function RootLayout({ children }) {
         
       </head>
       <body>
-        <GoogleTagManager gtmId="GTM-NRX3G2M3" /> 
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-KQVY1DF7RP"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KQVY1DF7RP');
+          `}
+        </Script>
+        
         <SearchProvider>
           <PlayerProvider>
             <SplashPage />
