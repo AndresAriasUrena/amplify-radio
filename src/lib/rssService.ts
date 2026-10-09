@@ -293,8 +293,17 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   'https://feeds.captivate.fm/verso-per-verso/': [
     {
       name: 'Alex Solís',
-      description: '',
-      imageUrl: '/assets/placeholder.png',
+      description: 'Comunicador y estratega creativo, fan de la música, josefino y necio desde siempre. Productor y conductor de Verso per Verso, un espacio dedicado a conversar con artistas, descubrir nuevas propuestas y explorar la escena musical costarricense y latinoamericana. Combina su experiencia en comunicación y estrategia creativa con su interés por la música, el arte y la cultura en todas sus formas.',
+      imageUrl: '/assets/autores/Alex.avif',
+      instagramUrl: 'https://www.instagram.com/',
+      status: 'actual',
+      podcastName: 'Verso por Verso',
+      podcastId: ''
+    },
+    {
+      name: 'Emanuel Calderón Sánchez',
+      description: 'Músico, comunicador y creativo audiovisual. Baterista profesional, productor y apasionado por la cultura alternativa, con trayectoria en proyectos nacionales e internacionales y experiencia en producción de video, contenido digital y dirección creativa. Como conductor de Verso Perverso, combina su experiencia artística y audiovisual con su pasión por la comunicación para descubrir nuevas propuestas, conversar con artistas y explorar las historias que mueven la escena musical costarricense y latinoamericana. Convencido de que detrás de cada canción hay una historia que merece ser contada.',
+      imageUrl: '/assets/autores/Emanuel.avif',
       instagramUrl: 'https://www.instagram.com/',
       status: 'actual',
       podcastName: 'Verso por Verso',
