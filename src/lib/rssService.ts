@@ -23,6 +23,7 @@ const PODCAST_RSS_FEEDS = [
   { url: 'https://feeds.captivate.fm/frecuencia-1111/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/verso-per-verso/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/travesia/', status: 'actual' as const },
+  { url: 'https://feeds.captivate.fm/el-club-del-disco/', status: 'actual' as const },
 
   // HISTORIALES
   { url: 'https://feeds.captivate.fm/que-intensas1/', status: 'historial' as const },
@@ -71,6 +72,7 @@ const PODCAST_LOCAL_IMAGES: { [rssUrl: string]: string } = {
   'https://feeds.captivate.fm/frecuencia-1111/': '/assets/podcast/frecuencia1111.png', // Missing file - will use fallback
   
   'https://feeds.captivate.fm/travesia/': '/assets/podcast/TravesIA.avif',
+  'https://feeds.captivate.fm/el-club-del-disco/': '/assets/placeholder.png',
 
   // HISTORIALES - Menor prioridad
   'https://feeds.captivate.fm/que-intensas1/': '/assets/podcast/que-intensas.avif',
@@ -270,7 +272,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'actual',
       podcastName: 'Conexion 220',
@@ -290,9 +292,9 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   ],
   'https://feeds.captivate.fm/verso-per-verso/': [
     {
-      name: 'John Doe',
-      description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      name: 'Alex Solís',
+      description: '',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'actual',
       podcastName: 'Verso por Verso',
@@ -307,6 +309,18 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       instagramUrl: 'https://www.facebook.com/javier.brenes/?locale=es_LA',
       status: 'actual',
       podcastName: 'TravesIA',
+      podcastId: ''
+    },
+  ],
+
+  'https://feeds.captivate.fm/el-club-del-disco/': [
+    {
+      name: 'Víctor Fernández',
+      description: '',
+      imageUrl: '/assets/placeholder.png',
+      instagramUrl: '',
+      status: 'actual',
+      podcastName: 'El Club del Disco',
       podcastId: ''
     },
   ],
@@ -382,7 +396,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'historial',
       podcastName: '',
@@ -393,7 +407,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'historial',
       podcastName: '',
@@ -404,7 +418,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'historial',
       podcastName: '',
@@ -415,7 +429,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'historial',
       podcastName: '',
@@ -426,7 +440,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'historial',
       podcastName: '',
@@ -437,7 +451,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'historial',
       podcastName: '',
@@ -448,7 +462,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'historial',
       podcastName: '',
@@ -459,7 +473,7 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
     {
       name: 'John Doe',
       description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
-      imageUrl: '/assets/autores/EmmaTristan.jpeg',
+      imageUrl: '/assets/placeholder.png',
       instagramUrl: 'https://www.instagram.com/',
       status: 'historial',
       podcastName: '',
