@@ -117,7 +117,7 @@ export default function PodcastGrid({ onOpenFilters }: PodcastGridProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {Array.from({ length: 6 }).map((_, index) => (
             <div key={index} className="animate-pulse">
-              <div className="bg-[#232323] aspect-[16/11] rounded-2xl mb-4"></div>
+              <div className="bg-[#232323] aspect-[4/3] rounded-2xl mb-4"></div>
               <div className="h-4 bg-[#232323] rounded mb-2"></div>
               <div className="h-4 bg-[#232323] rounded w-2/3"></div>
             </div>

@@ -22,7 +22,8 @@ const PODCAST_RSS_FEEDS = [
   { url: 'https://feeds.captivate.fm/conexion-220/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/frecuencia-1111/', status: 'actual' as const },
   { url: 'https://feeds.captivate.fm/verso-per-verso/', status: 'actual' as const },
-  
+  { url: 'https://feeds.captivate.fm/travesia/', status: 'actual' as const },
+
   // HISTORIALES
   { url: 'https://feeds.captivate.fm/que-intensas1/', status: 'historial' as const },
   { url: 'https://feeds.captivate.fm/alta-frecuencia-/', status: 'historial' as const },
@@ -69,6 +70,8 @@ const PODCAST_LOCAL_IMAGES: { [rssUrl: string]: string } = {
   'https://feeds.captivate.fm/verso-per-verso/': '/assets/podcast/versoperverso.avif',
   'https://feeds.captivate.fm/frecuencia-1111/': '/assets/podcast/frecuencia1111.png', // Missing file - will use fallback
   
+  'https://feeds.captivate.fm/travesia/': '/assets/podcast/TravesIA.avif',
+
   // HISTORIALES - Menor prioridad
   'https://feeds.captivate.fm/que-intensas1/': '/assets/podcast/que-intensas.avif',
   'https://feeds.captivate.fm/alta-frecuencia-/': '/assets/podcast/alta-frecuencia.avif',
@@ -241,17 +244,8 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
   ],
   'https://feeds.captivate.fm/flamingo-de-noche1/': [
     {
-      name: 'Mauricio Dapena',
-      description: 'Mauricio Dapena sacó licenciaturas en diseño publicitario y producción audiovisual en Costa Rica y un máster en dirección de cine en España. Siempre ha tenido una pasión por la comunicación creativa y esto lo ha llevado a incursionar como actor en diferentes proyectos, como productor/presentador en el show radial "El Mañanero" de la Meva Radio en Barcelona, además ha conducido y producido los talkshows "Untitled" para Canal 9 Costa Rica en 2011 y "Flamingo de Noche" que se crea en 2021 para abordar temas relevantes de la comunidad LGTBIQ+. Este último proyecto se convierte en un espacio multiplataforma con una primera temporada de 6 capítulos disponible en Youtube, una red noticiosa en Instagram y el programa de radio semanal con el mismo nombre en Amplify Radio.',
-      imageUrl: '/assets/autores/MauricioDapena.jpeg',
-      instagramUrl: 'https://www.instagram.com/flamingodenoche/',
-      status: 'actual',
-      podcastName: 'Flamingo de Noche',
-      podcastId: ''
-    },
-    {
-      name: 'Catalina Restrepo Mejía',
-      description: 'Colombiana-tica, publicista, escritora. Amante de los gatos, del vino y de Madonna. Cocreadora de Flamingo de Noche, un espacio para la comunidad LGTBIQ+.',
+      name: 'Cata Restrepo',
+      description: 'Creadora, productora y conductora de Flamingo de Noche, el primer programa LGBTIQ+ en radio abierta de Centroamérica. Lo que no se nombra, no existe. Todas y cada una de nuestras historias e identidades merecen ser bienvenidas, escuchadas, respetadas y amplificadas. En inglés, cuando los pájaros van en grupo se llama flock… pero cuando los flamencos van juntos, es un flamboyance. Somos Flamilia, aquella que eligimos y que nos apoya, nos aplaude y nos celebra.',
       imageUrl: '/assets/autores/CatalinaRestrepoMejia.jpeg',
       instagramUrl: 'https://instagram.com/catakats/',
       status: 'actual',
@@ -305,7 +299,18 @@ const PODCAST_AUTHORS: { [podcastUrl: string]: Author[] } = {
       podcastId: ''
     },
   ],
-  
+  'https://feeds.captivate.fm/travesia/': [
+    {
+      name: 'Javier Brenes Alfaro',
+      description: 'Javier Brenes Alfaro es consultor estratégico en Inteligencia Artificial y Transformación Digital con más de 15 años de experiencia liderando proyectos de alto impacto en América Latina. Ingeniero en Electrónica por el Tecnológico de Costa Rica, con especializaciones y certificaciones avanzadas del Massachusetts Institute of Technology (MIT) en Inteligencia Artificial, Transformación Digital y Liderazgo Digital, entre otras. Actualmente es cofundador y director ejecutivo de Next Gen Professionals (NGP), empresa enfocada en el diseño e implementación de proyectos de alfabetización profesional, consultoría estratégica y desarrollo de aplicaciones de Inteligencia Artificial en América Latina, Director de Alianzas Estratégicas de la Fundación de IA Responsable de Costa Rica (FAIR) y productor y anfitrión del podcast TravesIA, especializado en Inteligencia Artificial.',
+      imageUrl: '/assets/autores/Javier.jpeg',
+      instagramUrl: 'https://www.facebook.com/javier.brenes/?locale=es_LA',
+      status: 'actual',
+      podcastName: 'TravesIA',
+      podcastId: ''
+    },
+  ],
+
   // HISTORIALES CON AUTORES CONOCIDOS
   'https://feeds.captivate.fm/que-intensas1/': [
     {

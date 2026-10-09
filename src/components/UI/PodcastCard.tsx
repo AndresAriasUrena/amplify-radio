@@ -22,12 +22,12 @@ export default function PodcastCard({ podcast, priority = false }: PodcastCardPr
   return (
     <Link href={`/podcasts/${podcast.id}`}>
       <article className="group overflow-hidden hover:scale-[1.02] transition-all duration-700">
-        <div className="relative aspect-[16/11] bg-[#232323] rounded-2xl">
+        <div className="relative aspect-[4/3] bg-[#232323] rounded-2xl">
           <Image
             src={podcast.imageUrl || '/placeholder-podcast.jpg'}
             alt={cleanHtml(podcast.title)}
             fill
-            className="object-cover rounded-2xl"
+            className={`rounded-2xl ${podcast.imageUrl?.includes('flamingo') ? 'object-contain' : 'object-cover'}`}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={priority}
             loading={priority ? "eager" : "lazy"}
