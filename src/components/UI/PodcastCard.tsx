@@ -27,7 +27,7 @@ export default function PodcastCard({ podcast, priority = false }: PodcastCardPr
             src={podcast.imageUrl || '/placeholder-podcast.jpg'}
             alt={cleanHtml(podcast.title)}
             fill
-            className={`rounded-2xl ${podcast.imageUrl?.includes('flamingo') ? 'object-contain' : 'object-cover'}`}
+            className="object-cover rounded-2xl"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={priority}
             loading={priority ? "eager" : "lazy"}
